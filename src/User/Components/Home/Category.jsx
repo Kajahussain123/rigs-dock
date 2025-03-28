@@ -1,158 +1,221 @@
-import React, { useState } from "react";
-import { Box, Container, Menu, MenuItem } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Container, Menu, MenuItem, CircularProgress, Typography, Paper } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { viewCategories, viewMainCategories, viewSubCategories } from "../../../Services/allApi";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 const CategoryNav = () => {
+  const [mainCategories, setMainCategories] = useState([]);
+  const [categories, setCategories] = useState({});
+  const [subCategories, setSubCategories] = useState({});
   const [anchorEls, setAnchorEls] = useState({});
+  const [submenuAnchorEl, setSubmenuAnchorEl] = useState(null);
+  const [submenuItems, setSubmenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const [activeMainCategory, setActiveMainCategory] = useState(null);
 
-  const handleClick = (event, category) => {
-    setAnchorEls({
-      ...anchorEls,
-      [category]: event.currentTarget,
-    });
+  const BASE_URL = "http://localhost:3006/uploads/";
+
+  useEffect(() => {
+    const fetchMainCategories = async () => {
+      try {
+        const data = await viewMainCategories();
+        setMainCategories(data.mainCategories);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch main categories", error);
+        setLoading(false);
+      }
+    };
+    fetchMainCategories();
+  }, []);
+
+  const handleClick = async (event, mainCatId) => {
+    setAnchorEls({ ...anchorEls, [mainCatId]: event.currentTarget });
+    if (!categories[mainCatId]) {
+      try {
+        const data = await viewCategories(mainCatId);
+        setCategories((prev) => ({ ...prev, [mainCatId]: data }));
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    }
   };
 
-  const handleClose = (category) => {
-    setAnchorEls({
-      ...anchorEls,
-      [category]: null,
-    });
+  const handleClose = (mainCatId) => {
+    setAnchorEls({ ...anchorEls, [mainCatId]: null });
+    setSubmenuAnchorEl(null);
   };
 
-  const categories = [
-    {
-      title: "Course",
-      image:
-        "https://i.postimg.cc/QdJzM481/9204a030138c14df63a1a937df0e98a2.png",
-      items: ["Web Development", "Mobile Development", "Data Science", "UI/UX Design"],
-    },
-    {
-      title: "Corporate deals",
-      image:
-        "https://i.postimg.cc/BvZVPTby/79e8db90f322f0d1776fe71d6fa93750.png",
-      items: ["Business Solutions", "Enterprise Packages", "Bulk Orders", "Partnerships"],
-    },
-    {
-      title: "Grocery",
-      image: "https://i.postimg.cc/R0Pb7Wn0/2e626a93c02697429acae8b5545a3282.png",
-      items: ["Fresh Produce", "Dairy", "Beverages", "Snacks"],
-    },
-    {
-      title: "Fashion",
-      image:
-        "https://i.postimg.cc/HxVvBTQ9/bc94f9eb24bdb3571aab8c8a917e82d6.png",
-      items: ["Men", "Women", "Kids", "Accessories"],
-    },
-    {
-      title: "Electronics",
-      image:
-        "https://i.postimg.cc/wvZfrn28/23765b4f055ec4f7ce4a42688e567b1b.jpg",
-      items: ["Laptops", "Smartphones", "Accessories", "Gaming"],
-    },
-  ];
+  const handleSubmenuOpen = async (event, mainCatId, catId) => {
+    setSubmenuAnchorEl(event.currentTarget);
+    setActiveMainCategory(mainCatId);
+
+    if (!subCategories[catId]) {
+      try {
+        const data = await viewSubCategories(mainCatId, catId);
+        setSubCategories((prev) => ({ ...prev, [catId]: data }));
+        setSubmenuItems(data);
+      } catch (error) {
+        console.error("Failed to fetch subcategories", error);
+      }
+    } else {
+      setSubmenuItems(subCategories[catId]);
+    }
+  };
+
+  const handleSubmenuClose = () => {
+    setSubmenuAnchorEl(null);
+  };
+
+  const handleSubcategoryClick = (catId, subCatId) => {
+    if (!activeMainCategory) {
+      console.error("Main category ID is missing!");
+      return;
+    }
+    navigate(`/products/${activeMainCategory}/${catId}/${subCatId}`);
+  };
 
   return (
     <Container maxWidth="lg">
+      {/* Heading: Our Categories */}
+     <Typography variant="h5" component="h2" sx={{ fontFamily: `"Montserrat", sans-serif`,mt:2 }}>
+               <Box component="span" sx={{ color: "primary.main", fontFamily: `"Montserrat", sans-serif`, }}>Our</Box> Categoires
+             </Typography>
+
       <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          gap: { xs: 3, md: 6 },
-          py: { xs: 2, md: 3 },
-          px: { xs: 1, md: 2 },
-          backgroundColor: "white",
-          borderRadius: 2,
-        }}
+        display="flex"
+        flexWrap="wrap"
+        justifyContent="center"
+        gap={2}
+        py={3}
+        px={2}
+        bgcolor="white"
+        borderRadius={2}
       >
-        {categories.map((category) => (
-          <Box key={category.title}>
-            <Box
-              onClick={(e) => handleClick(e, category.title)}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                cursor: "pointer",
-                width: { xs: "80px", sm: "100px", md: "120px" },
-                "&:hover": {
-                  opacity: 0.8,
-                },
-              }}
-            >
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          mainCategories.map((mainCategory) => (
+            <Box key={mainCategory._id}>
               <Box
+                onClick={(e) => handleClick(e, mainCategory._id)}
                 sx={{
-                  width: { xs: "60px", sm: "80px", md: "100px" },
-                  height: { xs: "50px", sm: "70px", md: "80px" },
                   display: "flex",
-                  justifyContent: "center",
+                  flexDirection: "column",
                   alignItems: "center",
-                  marginBottom: 0.5,
+                  cursor: "pointer",
                 }}
               >
+                {/* Display Main Category Image */}
                 <Box
                   component="img"
-                  src={category.image}
-                  alt={category.title}
+                  src={`${BASE_URL}${mainCategory.image}`}
+                  alt={mainCategory.name}
                   sx={{
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    objectFit: "contain",
+                    width: 50,
+                    height: 50,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    mb: 1,
                   }}
                 />
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  fontSize: { xs: "12px", sm: "14px" },
-                  fontWeight: 500,
-                  color: "text.primary",
-                }}
-              >
-                {category.title} ▼
-              </Box>
-            </Box>
-            <Menu
-              anchorEl={anchorEls[category.title]}
-              open={Boolean(anchorEls[category.title])}
-              onClose={() => handleClose(category.title)}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "center",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "center",
-              }}
-              sx={{
-                "& .MuiPaper-root": {
-                  minWidth: "200px",
-                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                  mt: 1,
-                },
-              }}
-            >
-              {category.items.map((item) => (
-                <MenuItem
-                  key={item}
-                  onClick={() => handleClose(category.title)}
+                <Typography
+                  variant="body1"
                   sx={{
-                    fontSize: { xs: "12px", sm: "14px" },
-                    py: 1,
-                    "&:hover": {
-                      backgroundColor: "#f5f5f5",
-                    },
+                    fontWeight: 500,
+                    color: "text.primary",
+                    fontFamily: `"Montserrat", sans-serif`,
                   }}
                 >
-                  {item}
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-        ))}
+                  {mainCategory.name} <ArrowDropDownIcon/>
+                </Typography>
+              </Box>
+
+              {/* Main Category Dropdown */}
+              <Menu
+                anchorEl={anchorEls[mainCategory._id]}
+                open={Boolean(anchorEls[mainCategory._id])}
+                onClose={() => handleClose(mainCategory._id)}
+                PaperProps={{
+                  sx: {
+                    mt: 1,
+                    minWidth: 200,
+                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                    borderRadius: "8px",
+                  },
+                }}
+              >
+                {(categories[mainCategory._id] || []).map((category) => (
+                  <MenuItem
+                    key={category._id}
+                    onMouseEnter={(e) => handleSubmenuOpen(e, mainCategory._id, category._id)}
+                    sx={{
+                      py: 1.5,
+                      "&:hover": {
+                        backgroundColor: "#f5f5f5",
+                      },
+                    }}
+                  >
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        fontWeight: 500,
+                        fontFamily: `"Montserrat", sans-serif`,
+                      }}
+                    >
+                      {category.name} <ArrowRightIcon/>
+                    </Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+
+              {/* Subcategory Dropdown */}
+              <Menu
+                anchorEl={submenuAnchorEl}
+                open={Boolean(submenuAnchorEl)}
+                onClose={handleSubmenuClose}
+                PaperProps={{
+                  sx: {
+                    mt: 1,
+                    minWidth: 200,
+                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                    borderRadius: "8px",
+                  },
+                }}
+              >
+                {submenuItems.map((subItem) => (
+                  <MenuItem
+                    key={subItem._id}
+                    onClick={() => handleSubcategoryClick(subItem.category._id, subItem._id)}
+                    sx={{
+                      py: 1.5,
+                      "&:hover": {
+                        backgroundColor: "#f5f5f5",
+                      },
+                    }}
+                  >
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        fontWeight: 500,
+                        fontFamily: `"Montserrat", sans-serif`,
+                      }}
+                    >
+                      {subItem.name}
+                    </Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          ))
+        )}
       </Box>
     </Container>
   );
+
 };
 
 export default CategoryNav;

@@ -1,130 +1,187 @@
-import React from "react";
-import { Container, Grid, Card, CardContent, Typography, Box } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Container, Grid, Card, Typography, Box, CircularProgress, Chip } from "@mui/material";
 import { styled } from "@mui/system";
-
-const ProductCard = ({ product }) => (
-  <Card sx={{ padding: 2, textAlign: "center", boxShadow: 3 }}>
-    <Typography variant="caption" color="textSecondary">
-      {product.brand}
-    </Typography>
-    <img src={product.image} alt={product.name} style={{ width: "100px", margin: "10px auto" }} />
-    <Typography variant="body1" color="primary" sx={{ fontWeight: "bold" }}>
-      {product.name}
-    </Typography>
-    <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-      RS {product.oldPrice}
-    </Typography>
-    <Typography variant="body2" color="error">
-      RS {product.newPrice}
-    </Typography>
-  </Card>
-);
+import { useNavigate } from "react-router-dom";
+import { dealOfTheDay } from "../../../Services/allApi";
+import placeholder from '../../../Assets/PlacHolder.png';
 
 const SpecialOfferCard = styled(Card)({
   padding: 20,
   textAlign: "center",
   background: "#fff",
   boxShadow: "3px 3px 10px rgba(0,0,0,0.1)",
+  cursor: "pointer",
+  position: "relative",
+  overflow: "visible",
 });
 
+const DiscountTag = styled(Box)(({ color }) => ({
+  position: "absolute",
+  top: -10,
+  right: -10,
+  width: 60,
+  height: 60,
+  borderRadius: "50%",
+  backgroundColor: color,
+  color: "white",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 1,
+  boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+  fontSize: "0.7rem",
+  fontWeight: "bold",
+}));
+
 const DealOfTheDay = () => {
-  const products = [
-    {
-      brand: "Bin Bakar Electronics",
-      name: "Gree GS-12FTH...",
-      image: "https://i.postimg.cc/nzKrS9qv/f2c58f9ed686f176fffd1f2588ee3745.png",
-      oldPrice: "66,000",
-      newPrice: "56,000",
-    },
-    {
-      brand: "Bin Bakar Electronics",
-      name: "Gree Air...",
-      image: "https://i.postimg.cc/PJtxgfM0/f5fdfb9d331a9a77687ba57a16d7236f.png",
-      oldPrice: "66,000",
-      newPrice: "171,000",
-    },
-    {
-      brand: "Bin Bakar Electronics",
-      name: "Samsung...",
-      image: "https://i.postimg.cc/KjJzxXqj/698ce781d8527460b256420ee16298cf.jpg",
-      oldPrice: "110,000",
-      newPrice: "101,000",
-    },
-    {
-      brand: "Bin Bakar Electronics",
-      name: "Haier HSU...",
-      image: "https://i.postimg.cc/pVZyD8Wv/7bda3455eae9f1b1e68eaf50cdabffd3.png",
-      oldPrice: "66,000",
-      newPrice: "70,000",
-    },
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const BASE_URL = "http://localhost:3006/uploads/";
+  const navigate = useNavigate();
+
+  // Color options for discount tags
+  const discountColors = [
+    "#1976d2", // blue
+   
   ];
+
+  useEffect(() => {
+    const fetchDeals = async () => {
+      try {
+        const data = await dealOfTheDay();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching deal of the day", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDeals();
+  }, []);
+
+  const handleViewMore = () => {
+    navigate("/dealoftheday");
+  };
+
+  // Calculate discount percentage
+  const calculateDiscount = (originalPrice, finalPrice) => {
+    const discount = ((originalPrice - finalPrice) / originalPrice) * 100;
+    return Math.round(discount);
+  };
 
   return (
     <Container sx={{ my: 4 }}>
-      <Typography variant="h5" sx={{ fontWeight: "bold", color: "#002F6C", mb: 3 }}>
-        Deal Of The Day
-      </Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <SpecialOfferCard>
-            <Typography variant="h6">Special Offer</Typography>
-            <Typography variant="body2" color="secondary">
-              Save 10%
-            </Typography>
-            <img
-              src="https://i.postimg.cc/MTg554bc/8218257cbe3d80abe8db1723d5c91d81.png"
-              alt="JBL Headphone"
-              style={{ width: "100%" }}
-            />
-            <Typography variant="body1" fontWeight="bold">
-              JBL Headphone
-            </Typography>
-            <Typography variant="h6" color="error">
-              RS 56,000
-            </Typography>
-            <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-              RS 66,000
-            </Typography>
-          </SpecialOfferCard>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Grid container spacing={2}>
-            {/* Adjusted Grid to ensure two cards per row */}
-            {products.map((product, index) => (
-              <Grid item xs={12} sm={6} md={6} key={index}>
-                {/* Right-side Product Card with details on the left and image on the right */}
-                <Card sx={{ display: "flex", flexDirection: "row", boxShadow: 3, padding: 2 }}>
-                  <Box sx={{ flex: 1, paddingRight: 2, textAlign: "left" }}>
-                    <Typography variant="caption" color="textSecondary">
-                      {product.brand}
-                    </Typography>
-                    <Typography variant="body1" color="primary" sx={{ fontWeight: "bold" }}>
-                      {product.name}
-                    </Typography>
-                    <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-                      RS {product.oldPrice}
-                    </Typography>
-                    <Typography variant="body2" color="error">
-                      RS {product.newPrice}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      style={{
-                        width: "100%",
-                        height: "200px",
-                        objectFit: "contain",
-                      }}
-                    />
-                  </Box>
-                </Card>
-              </Grid>
-            ))}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+        <Typography variant="h5" component="h2" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+          <Box component="span" sx={{ color: "primary.main", fontFamily: `"Montserrat", sans-serif` }}>Deal</Box> Of The Day
+        </Typography>
+        <Typography
+          variant="body1"
+          color="primary"
+          sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
+          onClick={handleViewMore}
+        >
+          View More
+        </Typography>
+      </Box>
+
+      {loading ? (
+        <Box display="flex" justifyContent="center">
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            {products.length > 0 && (
+              <SpecialOfferCard onClick={() => navigate(`/single/${products[0].product._id}`)}>
+                <DiscountTag color={discountColors[0]}>
+                  <span>Save</span>
+                  <span>{calculateDiscount(products[0].product.price, products[0].offerPrice)}%</span>
+                </DiscountTag>
+                <Typography variant="h6" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                  Special Offer
+                </Typography>
+                <img
+                  src={placeholder}
+                  alt={products[0].product.name}
+                  style={{ width: "100%", maxHeight: "250px", objectFit: "contain" }}
+                />
+                <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="body1" fontWeight="bold">
+                  {products[0].product.name}
+                </Typography>
+                <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="h6" color="error">
+                ₹ {products[0].offerPrice}
+                </Typography>
+                <Typography variant="body2" sx={{ textDecoration: "line-through", fontFamily: `"Montserrat", sans-serif` }}>
+                ₹ {products[0].product.price}
+                </Typography>
+              </SpecialOfferCard>
+            )}
           </Grid>
+
+          <Grid item xs={12} md={8}>
+  <Grid container spacing={2}>
+    {products.slice(1).map((item, index) => {
+      const discountPercent = calculateDiscount(item.product.price, item.offerPrice);
+      const colorIndex = (index + 1) % discountColors.length;
+      
+      return (
+        <Grid item xs={12} sm={6} key={index}>
+          <Card
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              boxShadow: 3,
+              padding: 2,
+              cursor: "pointer",
+              position: "relative",
+              overflow: "hidden", // Ensure badge doesn't overflow
+            }}
+            onClick={() => navigate(`/single/${item.product._id}`)}
+          >
+            <Box sx={{ flex: 1, paddingRight: 2, textAlign: "left", position: "relative" }}>
+              {/* Move Discount Badge inside the left content area */}
+              <DiscountTag color={discountColors[colorIndex]} sx={{ position: "absolute", top: "100px", left: "10px" }}>
+                <span>Save</span>
+                <span>{discountPercent}%</span>
+              </DiscountTag>
+
+              <Typography variant="caption" color="textSecondary" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                {item.product.brand}
+              </Typography>
+              <Typography variant="body1" color="primary" sx={{ fontWeight: "bold", fontFamily: `"Montserrat", sans-serif` }}>
+                {item.product.name}
+              </Typography>
+              <Typography variant="body2" sx={{ textDecoration: "line-through", fontFamily: `"Montserrat", sans-serif` }}>
+              ₹ {item.product.price}
+              </Typography>
+              <Typography variant="body2" color="error" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+              ₹ {item.offerPrice}
+              </Typography>
+            </Box>
+
+            {/* Product Image on the right side */}
+            <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+              <img
+                src={placeholder}
+                alt={item.product.name}
+                style={{
+                  width: "100%",
+                  height: "200px",
+                  objectFit: "contain",
+                }}
+              />
+            </Box>
+          </Card>
         </Grid>
-      </Grid>
+      );
+    })}
+  </Grid>
+</Grid>
+
+        </Grid>
+      )}
     </Container>
   );
 };

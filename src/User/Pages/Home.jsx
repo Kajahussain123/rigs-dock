@@ -6,6 +6,7 @@ import DealsSlider from '../Components/Home/DealsCarousal'
 import NewArrivals from '../Components/Home/NewArrivals'
 import OurProducts from '../Components/Home/OurProducts'
 import DealOfTheDay from '../Components/Home/DealOfTheDay'
+import Footer from '../Components/Footer'
 
 function Home() {
   return (
@@ -17,6 +18,7 @@ function Home() {
         <div><NewArrivals></NewArrivals></div>
         <div><OurProducts></OurProducts></div>
         <div><DealOfTheDay></DealOfTheDay></div>
+        <Footer></Footer>
     </div>
   )
 }

@@ -1,76 +1,85 @@
-import React, { useState } from "react";
-import { Avatar, Box, Button, Container, Grid, Paper, TextField, Typography, Radio, RadioGroup, FormControlLabel } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, TextField, Typography, Link, Paper } from "@mui/material";
+import { getProfile } from "../../../Services/allApi";
 
-const ProfilePage = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [user, setUser] = useState({
-    firstName: "Hari",
-    lastName: "Prasad",
-    email: "hari592@gmail.com",
-    mobile: "889774544",
-    gender: "male",
-  });
+const ProfileInfo = () => {
+  const [profile, setProfile] = useState({ name: "", email: "", mobileNumber: "" });
 
-  const handleEdit = () => {
-    setIsEditing(!isEditing);
-  };
+  const userId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await getProfile(userId);
+        setProfile({ 
+          name: data.name, 
+          email: data.email,
+          mobileNumber: data.mobileNumber
+        });
+      } catch (error) {
+        console.error("Failed to fetch profile", error);
+      }
+    };
+    
+    if (userId) {
+      fetchProfile();
+    }
+  }, [userId]);
 
   return (
-    <Container maxWidth="lg">
-      <Grid container spacing={3}>
+    <Paper elevation={0} sx={{ p: 3, pr: 4, backgroundColor: "#FFFFFF" }}>
+      {/* Personal Information */}
+      <Box mb={2} display="flex" alignItems="center">
+        <Typography variant="h6" fontWeight="bold" mr={1} sx={{fontFamily: `"Montserrat", sans-serif`,}}>
+          Personal Information
+        </Typography>
+        {/* <Link href="#" sx={{ fontSize: 14, color: "#0073e6", cursor: "pointer" }}>
+          Edit
+        </Link> */}
+      </Box>
+      <Box display="flex" gap={2} mb={2}>
+        <TextField
         
-        {/* Profile Information */}
-        <Grid item xs={12} sm={8}>
-          <Paper elevation={2} sx={{ padding: 3 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="h6">Personal Information</Typography>
-              <Button onClick={handleEdit} color="primary">
-                {isEditing ? "Save" : "Edit"}
-              </Button>
-            </Box>
+          label="Full Name"
+          value={profile.name}
+          disabled
+          size="small"
+          sx={{ width: "300px", mb: 2 }}
+        />
+      </Box>
 
-            <Grid container spacing={2} sx={{ mt: 2 }}>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="First Name"
-                  value={user.firstName}
-                  disabled={!isEditing}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Last Name"
-                  value={user.lastName}
-                  disabled={!isEditing}
-                  variant="outlined"
-                />
-              </Grid>
-            </Grid>
+      {/* Email Address */}
+      <Box mb={2} display="flex" alignItems="center">
+        <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="h6" fontWeight="bold" mr={1}>
+          Email Address
+        </Typography>
+        {/* <Link href="#" sx={{ fontSize: 14, color: "#0073e6", cursor: "pointer" }}>
+          Edit
+        </Link> */}
+      </Box>
+      <TextField
+        label="Email"
+        value={profile.email}
+        disabled
+        size="small"
+        sx={{ width: "300px", mb: 2 }}
+      />
 
-            <RadioGroup row value={user.gender} sx={{ mt: 2 }}>
-              <FormControlLabel value="male" control={<Radio disabled={!isEditing} />} label="Male" />
-              <FormControlLabel value="female" control={<Radio disabled={!isEditing} />} label="Female" />
-            </RadioGroup>
-
-            <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mt: 2 }}>
-              <Typography variant="body1">Email address</Typography>
-              <Button color="primary">Edit</Button>
-            </Box>
-            <TextField fullWidth value={user.email} disabled variant="outlined" sx={{ mt: 1 }} />
-
-            <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mt: 2 }}>
-              <Typography variant="body1">Mobile number</Typography>
-              <Button color="primary">Edit</Button>
-            </Box>
-            <TextField fullWidth value={user.mobile} disabled variant="outlined" sx={{ mt: 1 }} />
-          </Paper>
-        </Grid>
-      </Grid>
-    </Container>
+      {/* Mobile Number */}
+      <Box mb={2} display="flex" alignItems="center">
+        <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="h6" fontWeight="bold" mr={1}>
+          Mobile Number
+        </Typography>
+      </Box>
+      <TextField
+        label="Mobile Number"
+        value={profile.mobileNumber}
+        disabled
+        size="small"
+        sx={{ width: "300px", mb: 2 }}
+      />
+    </Paper>
   );
 };
 
-export default ProfilePage;
+export default ProfileInfo;

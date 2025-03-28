@@ -1,27 +1,64 @@
-import React from "react";
-import { Container, Grid, Card, CardContent, Typography, Button } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Container, Grid, Card, Box, Typography, Button, CircularProgress, Snackbar } from "@mui/material";
 import { styled } from "@mui/system";
+import { getAllProducts, addToCart } from "../../../Services/allApi";
+import placeholder from "../../../Assets/PlacHolder.png"
+import LoginModal from "../LoginModel";
 
-const ProductCard = ({ product }) => (
-  <Card sx={{ padding: 2, textAlign: "center", boxShadow: 3 }}>
-    <Typography variant="caption" color="textSecondary">
-      {product.brand}
-    </Typography>
-    <img src={product.image} alt={product.name} style={{ width: "100px", margin: "10px auto" }} />
-    <Typography variant="body1" color="primary" sx={{ fontWeight: "bold" }}>
-      {product.name}
-    </Typography>
-    <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-      RS {product.oldPrice}
-    </Typography>
-    <Typography variant="body2" color="error">
-      RS {product.newPrice}
-    </Typography>
-    <Button variant="contained" color="primary" fullWidth sx={{ mt: 1 }}>
-      Add to cart
-    </Button>
-  </Card>
-);
+const BASE_URL = "http://localhost:3006/uploads/";
+
+const ProductCard = ({ product, handleAddToCart }) => {
+  const navigate = useNavigate();
+
+  return (
+    <Card
+      sx={{ padding: 2, textAlign: "center", boxShadow: 3, cursor: "pointer" }}
+      onClick={() => navigate(`/single/${product._id}`)}
+    >
+      {/* <Typography variant="caption" color="textSecondary">
+        {product.brand}
+      </Typography> */}
+      <img
+        // src={`${BASE_URL}/${product.images[0]}`}
+        src={placeholder}
+        alt={product.name}
+        style={{ width: "100px", margin: "10px auto" }}
+      />
+      <Typography
+        variant="body1"
+        color="primary"
+        sx={{
+          fontWeight: "bold",
+          whiteSpace: "nowrap", // Prevents text from wrapping
+          overflow: "hidden", // Hides overflow text
+          textOverflow: "ellipsis", // Adds "..."
+          maxWidth: "100%", // Ensures text doesn't exceed container width
+          display: "block",
+          fontFamily: `"Montserrat", sans-serif`,
+        }}
+      >
+        {product.name}
+      </Typography>
+
+      <Typography variant="body2" sx={{ textDecoration: "line-through", fontFamily: `"Montserrat", sans-serif`, }}>
+      ₹ {product.price}
+      </Typography>
+      <Typography variant="body2" color="error" sx={{ fontFamily: `"Montserrat", sans-serif`, }}>
+      ₹ {product.finalPrice || product.price}
+      </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        sx={{ mt: 1, fontFamily: `"Montserrat", sans-serif`, }}
+        onClick={(e) => handleAddToCart(e, product._id)}
+      >
+        Add to cart
+      </Button>
+    </Card>
+  );
+};
 
 const SpecialOfferCard = styled(Card)({
   padding: 20,
@@ -31,104 +68,137 @@ const SpecialOfferCard = styled(Card)({
 });
 
 const OurProducts = () => {
-  const products = [
-    {
-      brand: "Bin Bakar Electronics",
-      name: "Gree GS-12FTH...",
-      image: "https://i.postimg.cc/jdpGkn53/2cc97d0e172ae783303181ee0ba6e46f.png",
-      oldPrice: "66,000",
-      newPrice: "56,000",
-    },
-    {
-      brand: "Bin Bakar Electronics",
-      name: "Gree Air...",
-      image: "https://i.postimg.cc/mg70xZ1L/123f8e353c2f101176ae5f8fc112aebb.png",
-      oldPrice: "66,000",
-      newPrice: "171,000",
-    },
-    {
-      brand: "Bin Bakar Electronics",
-      name: "Samsung...",
-      image: "https://i.postimg.cc/vTjpycvB/1fc9b18bf658022df960df5dc71f56ad.png",
-      oldPrice: "110,000",
-      newPrice: "101,000",
-    },
-    {
-      brand: "Bin Bakar Electronics",
-      name: "Haier HSU...",
-      image: "https://i.postimg.cc/xj4rM4S2/90a987630f53cf49962424e09cf35b99.png",
-      oldPrice: "66,000",
-      newPrice: "70,000",
-    },
-    {
-        brand: "Bin Bakar Electronics",
-        name: "Gree GS-12FTH...",
-        image: "https://i.postimg.cc/jdpGkn53/2cc97d0e172ae783303181ee0ba6e46f.png",
-        oldPrice: "66,000",
-        newPrice: "56,000",
-      },
-      {
-        brand: "Bin Bakar Electronics",
-        name: "Gree Air...",
-        image: "https://i.postimg.cc/mg70xZ1L/123f8e353c2f101176ae5f8fc112aebb.png",
-        oldPrice: "66,000",
-        newPrice: "171,000",
-      },
-      {
-        brand: "Bin Bakar Electronics",
-        name: "Samsung...",
-        image: "https://i.postimg.cc/vTjpycvB/1fc9b18bf658022df960df5dc71f56ad.png",
-        oldPrice: "110,000",
-        newPrice: "101,000",
-      },
-      {
-        brand: "Bin Bakar Electronics",
-        name: "Haier HSU...",
-        image: "https://i.postimg.cc/xj4rM4S2/90a987630f53cf49962424e09cf35b99.png",
-        oldPrice: "66,000",
-        newPrice: "70,000",
-      },
-  ];
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
+  const openLoginModal = () => {
+    setIsLoginOpen(true);
+  };
+
+  const closeLoginModal = () => {
+    setIsLoginOpen(false);
+  };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getAllProducts();
+        console.log("API Response:", data);
+
+        if (!Array.isArray(data)) {
+          console.error("Invalid API response: Expected an array, received:", data);
+          return;
+        }
+
+        setProducts(data.slice(0, 9));
+      } catch (error) {
+        console.error("Failed to fetch products", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const handleAddToCart = async (e, productId) => {
+    e.stopPropagation(); // Prevent card click navigation
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      openLoginModal(); // Show the login modal when user is not logged in
+      return;
+    }
+
+    try {
+      await addToCart(userId, productId, 1);
+      setSuccessMessage("Product added to cart successfully!");
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      console.error("Error adding product to cart", error);
+      alert("Failed to add product to cart. Try again.");
+    }
+  };
+
+  const handleViewMore = () => {
+    navigate("/allproducts"); // Navigate to a dedicated deals page
+  };
 
   return (
     <Container sx={{ my: 4 }}>
-      <Typography variant="h5" sx={{ fontWeight: "bold", color: "#002F6C", mb: 3 }}>
-        Our Products
-      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+        <Typography variant="h5" component="h2" sx={{ fontFamily: `"Montserrat", sans-serif`, }}>
+          <Box component="span" sx={{ color: "primary.main", fontFamily: `"Montserrat", sans-serif`, }}>Our</Box> Products
+        </Typography>
+        <Typography
+          variant="body1"
+          color="primary"
+          sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
+          onClick={handleViewMore}
+        >
+          View More
+        </Typography>
+      </Box>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <SpecialOfferCard>
-            <Typography variant="h6">Special Offer</Typography>
-            <Typography variant="body2" color="secondary">
-              save 10%
-            </Typography>
-            <img
-              src="https://i.postimg.cc/2ySgZgwP/85c8c3f8948346cfb75dc8c7c996b6d7.png"
-              alt="JBL Headphone"
-              style={{ width: "100%" }}
-            />
-            <Typography variant="body1" fontWeight="bold">
-              JBL Headphone
-            </Typography>
-            <Typography variant="h6" color="error">
-              RS 56,000
-            </Typography>
-            <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-              RS 66,000
-            </Typography>
-          </SpecialOfferCard>
+          {products.length > 0 && (
+            <Box
+              sx={{ cursor: "pointer" }}
+              onClick={() => navigate(`/single/${products[0]._id}`)}
+            >
+              <SpecialOfferCard>
+                <Typography variant="h6" sx={{ fontFamily: `"Montserrat", sans-serif`, }}>Special Offer</Typography>
+                <Typography variant="body2" color="secondary" sx={{ fontFamily: `"Montserrat", sans-serif`, }}>
+                  Save 10%
+                </Typography>
+                <img
+                  // src={`${BASE_URL}/${products[0].images[0]}`}
+                  src={placeholder}
+                  alt={products[0].name}
+                  style={{ width: "100%" }}
+                />
+                <Typography variant="body1" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif`, }}>
+                  {products[0].name}
+                </Typography>
+                <Typography variant="h6" color="error" sx={{ fontFamily: `"Montserrat", sans-serif`, }}>
+                ₹ {products[0].finalPrice || products[0].price}
+                </Typography>
+                <Typography variant="body2" sx={{ textDecoration: "line-through", fontFamily: `"Montserrat", sans-serif`, }}>
+                ₹ {products[0].price}
+                </Typography>
+              </SpecialOfferCard>
+            </Box>
+          )}
         </Grid>
+
         <Grid item xs={12} md={8}>
-          <Grid container spacing={2}>
-            {/* Adjust Grid to make sure 4 cards are displayed in a row */}
-            {products.map((product, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <ProductCard product={product} />
-              </Grid>
-            ))}
-          </Grid>
+          {loading ? (
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Grid container spacing={2}>
+              {products.slice(1, 9).map((product, index) => (
+                <Grid item xs={6} sm={6} md={3} key={index}> {/* Updated xs from 12 to 6 */}
+                  <ProductCard product={product} handleAddToCart={handleAddToCart} />
+                </Grid>
+              ))}
+            </Grid>
+
+          )}
         </Grid>
       </Grid>
+      {isLoginOpen && <LoginModal show={isLoginOpen} handleClose={closeLoginModal} />}
+
+      <Snackbar
+        open={!!successMessage}
+        autoHideDuration={3000}
+        onClose={() => setSuccessMessage("")}
+        message={successMessage}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      />
     </Container>
   );
 };

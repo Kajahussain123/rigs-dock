@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -6,42 +7,23 @@ import {
   Card,
   CardContent,
   CardMedia,
+  CircularProgress,
   Container,
   Grid,
-  Menu,
-  MenuItem,
   Stack,
   Toolbar,
-  Typography
-} from '@mui/material';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-
-const NavMenuItem = ({ title }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  
-  return (
-    <Box>
-      <Button
-        color="inherit"
-        endIcon={<KeyboardArrowDownIcon />}
-        onClick={(e) => setAnchorEl(e.currentTarget)}
-      >
-        {title}
-      </Button>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
-      >
-        <MenuItem onClick={() => setAnchorEl(null)}>Option 1</MenuItem>
-        <MenuItem onClick={() => setAnchorEl(null)}>Option 2</MenuItem>
-        <MenuItem onClick={() => setAnchorEl(null)}>Option 3</MenuItem>
-      </Menu>
-    </Box>
-  );
-};
+  Typography,
+  Snackbar,
+  IconButton,
+} from "@mui/material";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { viewProducts, addToCart, addToWishlist, getWishlist, removeWishlist } from "../../../Services/allApi"; // Import removeWishlist
+import placeholder from "../../../Assets/PlacHolder.png";
+import LoginModal from "../LoginModel";
+import FilterCategory from "./FilterCategory";
 
 const ImageCarousel = ({ images }) => {
   const [currentImage, setCurrentImage] = useState(0);
@@ -57,201 +39,274 @@ const ImageCarousel = ({ images }) => {
   };
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{ position: "relative" }}>
       <CardMedia
         component="img"
         height="200"
-        image={images[currentImage]}
-        alt="Car Image"
-        sx={{ objectFit: 'cover' }}
+        image={images.length ? images[currentImage] : placeholder}
+        alt="Product Image"
+        sx={{ objectFit: "cover" }}
       />
-      
-      {/* Navigation Arrows */}
-      <Button
-        sx={{
-          position: 'absolute',
-          left: 0,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          minWidth: '36px',
-          p: 0,
-          color: 'white',
-          '&:hover': { backgroundColor: 'rgba(0,0,0,0.2)' }
-        }}
-        onClick={prevImage}
-      >
-        <ChevronLeftIcon />
-      </Button>
-      
-      <Button
-        sx={{
-          position: 'absolute',
-          right: 0,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          minWidth: '36px',
-          p: 0,
-          color: 'white',
-          '&:hover': { backgroundColor: 'rgba(0,0,0,0.2)' }
-        }}
-        onClick={nextImage}
-      >
-        <ChevronRightIcon />
-      </Button>
-
-      {/* Dots Navigation */}
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 8,
-          left: 0,
-          right: 0,
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 1
-        }}
-      >
-        {images.map((_, index) => (
-          <Box
-            key={index}
-            onClick={(e) => {
-              e.stopPropagation();
-              setCurrentImage(index);
-            }}
+      {images.length > 1 && (
+        <>
+          <Button
             sx={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              backgroundColor: index === currentImage ? 'white' : 'rgba(28, 9, 9, 0.91)',
-              cursor: 'pointer',
-              transition: 'background-color 0.3s'
+              position: "absolute",
+              left: 0,
+              top: "50%",
+              transform: "translateY(-50%)",
+              minWidth: "36px",
+              p: 0,
+              color: "white",
+              "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
             }}
-          />
-        ))}
-      </Box>
+            onClick={prevImage}
+          >
+            <ChevronLeftIcon />
+          </Button>
+          <Button
+            sx={{
+              position: "absolute",
+              right: 0,
+              top: "50%",
+              transform: "translateY(-50%)",
+              minWidth: "36px",
+              p: 0,
+              color: "white",
+              "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
+            }}
+            onClick={nextImage}
+          >
+            <ChevronRightIcon />
+          </Button>
+        </>
+      )}
     </Box>
   );
 };
 
-const CarRentalPage = () => {
-  const cars = [
-    {
-      id: 1,
-      name: 'MINI Cooper',
-      price: 'RS 30,000',
-      perDay: 'Per /day',
-      images: [
-        'https://i.postimg.cc/yxWw2Fct/43f38368cb9b512e83f5cca9215559eb.jpg',
-        'https://i.postimg.cc/2ySgZgwP/85c8c3f8948346cfb75dc8c7c996b6d7.png',
-        '/api/placeholder/400/300'
-      ]
-    },
-    {
-        id: 2,
-        name: 'MINI Cooper',
-        price: 'RS 30,000',
-        perDay: 'Per /day',
-        images: [
-          'https://i.postimg.cc/yxWw2Fct/43f38368cb9b512e83f5cca9215559eb.jpg',
-          'https://i.postimg.cc/2ySgZgwP/85c8c3f8948346cfb75dc8c7c996b6d7.png',
-          '/api/placeholder/400/300'
-        ]
-      },
-      {
-        id: 3,
-        name: 'MINI Cooper',
-        price: 'RS 30,000',
-        perDay: 'Per /day',
-        images: [
-          'https://i.postimg.cc/yxWw2Fct/43f38368cb9b512e83f5cca9215559eb.jpg',
-          'https://i.postimg.cc/2ySgZgwP/85c8c3f8948346cfb75dc8c7c996b6d7.png',
-          '/api/placeholder/400/300'
-        ]
-      },
-    
-    // ... more cars with similar structure
-  ];
+const ProductsPage = () => {
+  const { mainCatId, catId, subCatId } = useParams();
+  const navigate = useNavigate();
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [wishlist, setWishlist] = useState(new Set());
+
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
+  const openLoginModal = () => {
+    setIsLoginOpen(true);
+  };
+
+  const closeLoginModal = () => {
+    setIsLoginOpen(false);
+  };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await viewProducts(mainCatId, catId, subCatId);
+        setProducts(data.products);
+        setFilteredProducts(data.products); // ✅ Initialize filteredProducts with fetched products
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch products", error);
+        setProducts([]);
+        setFilteredProducts([]);
+        setLoading(false);
+      }
+    };
+
+    const fetchWishlist = async () => {
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
+
+      try {
+        const data = await getWishlist(userId);
+        if (!data || !Array.isArray(data)) {
+          console.warn("Unexpected wishlist format:", data);
+          return;
+        }
+
+        const wishlistSet = new Set(data.map(item => item._id));
+        setWishlist(wishlistSet);
+      } catch (error) {
+        console.error("Failed to fetch wishlist", error);
+      }
+    };
+
+    fetchProducts();
+    fetchWishlist();
+  }, [mainCatId, catId, subCatId]);
+
+
+  const handleAddToCart = async (e, productId) => {
+    e.stopPropagation();
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      openLoginModal(); // Show the login modal when user is not logged in
+      return;
+    }
+
+    try {
+      await addToCart(userId, productId, 1);
+      setSuccessMessage("Product added to cart successfully!");
+    } catch (error) {
+      console.error("Error adding product to cart", error);
+      alert("Failed to add product to cart. Try again.");
+    }
+  };
+
+  const handleAddToWishlist = async (e, productId) => {
+    e.stopPropagation();
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      openLoginModal(); // Show the login modal when user is not logged in
+      return;
+    }
+
+    try {
+      if (wishlist.has(productId)) {
+        // If the product is already in the wishlist, remove it
+        await removeWishlist(userId, productId);
+        setWishlist((prevWishlist) => {
+          const newWishlist = new Set(prevWishlist);
+          newWishlist.delete(productId);
+          return newWishlist;
+        });
+        setSuccessMessage("Product removed from wishlist!");
+      } else {
+        // If the product is not in the wishlist, add it
+        await addToWishlist(userId, productId);
+        setWishlist((prevWishlist) => {
+          const newWishlist = new Set(prevWishlist);
+          newWishlist.add(productId);
+          return newWishlist;
+        });
+        setSuccessMessage("Product added to wishlist!");
+      }
+    } catch (error) {
+      console.error("Error updating wishlist", error);
+      alert("Failed to update wishlist. Try again.");
+    }
+  };
+  const handleFilterChange = (filters) => {
+    let filtered = [...products];
+
+    if (filters.brand) {
+      filtered = filtered.filter(product => product.brand === filters.brand);
+    }
+
+    if (filters.priceRange) {
+      filtered = filtered.filter(product =>
+        product.finalPrice >= filters.priceRange[0] && product.finalPrice <= filters.priceRange[1]
+      );
+    }
+
+    if (filters.rating) {
+      filtered = filtered.filter(product => product.averageRating >= filters.rating);
+    }
+
+    // ✅ Reset filteredProducts to all products if no filters are applied
+    setFilteredProducts(filtered.length > 0 ? filtered : products);
+  };
+
+
+  if (loading) {
+    return <CircularProgress />;
+  }
 
   return (
     <Box>
-      {/* Navigation Bar */}
       <AppBar position="static" color="transparent" elevation={0}>
         <Toolbar>
-          <Stack direction="row" spacing={2} sx={{ width: '100%', justifyContent: 'center' }}>
-            <NavMenuItem title="Rental Services" />
-            <NavMenuItem title="Second Hand" />
-            <NavMenuItem title="Grocery" />
-            <NavMenuItem title="Fashion" />
-            <NavMenuItem title="Electronics" />
-          </Stack>
+          {/* <Typography variant="h6">Products</Typography> */}
         </Toolbar>
       </AppBar>
-
-      {/* Main Content */}
       <Container sx={{ py: 4 }}>
-        {/* Category Header */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Car
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary">
-            Premium Vehicle
-          </Typography>
-        </Box>
-
-        {/* Products Grid */}
+        <FilterCategory
+          onFilterChange={handleFilterChange}
+          products={products} // Pass the products array
+        />
         <Grid container spacing={3}>
-          {cars.map((car) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={car.id}>
-              <Card sx={{ 
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                '&:hover': {
-                  boxShadow: 6
-                }
-              }}>
-                <ImageCarousel images={car.images} />
+          {filteredProducts.map((product) => (
+            <Grid item xs={6} sm={6} md={4} lg={3} key={product._id}>
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "relative",
+                  "&:hover": { boxShadow: 6, cursor: "pointer" },
+                }}
+                onClick={() => navigate(`/single/${product._id}`)}
+              >
+                {/* Wishlist (Love) Icon */}
+                <IconButton
+                  sx={{
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    color: wishlist.has(product._id) ? "red" : "gray",
+                    zIndex: 1,
+                  }}
+                  onClick={(e) => handleAddToWishlist(e, product._id)}
+                >
+                  {wishlist.has(product._id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                </IconButton>
+
+                {/* Image Carousel */}
+                <ImageCarousel images={[placeholder]} />
+
                 <CardContent>
                   <Stack spacing={1}>
-                    <Typography variant="h6">
-                      {car.name}
+                    {/* Product Name (Truncated to 10 characters) */}
+                    <Typography variant="h6" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                      {product.name.length > 10 ? `${product.name.substring(0, 10)}...` : product.name}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="h6" color="primary">
-                        {car.price}
+
+                    {/* Brand Name */}
+                    <Typography variant="body2" color="text.secondary" sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold" }}>
+                      Brand: {product.brand || "Unknown"}
+                    </Typography>
+
+                    {/* Rating Section */}
+                    {/* <Stack direction="row" alignItems="center" spacing={0.5}>
+                      <Typography variant="body2" sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold", color: "#ff9800" }}>
+                        ⭐ {product.averageRating > 0 ? product.averageRating : "0 Ratings"}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {car.perDay}
+                      <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="body2" color="text.secondary">
+                        ({product.totalReviews > 0 ? `${product.totalReviews} Reviews` : "0 Reviews"})
                       </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <Button
-                        variant="outlined"
-                        fullWidth
-                        sx={{
-                          borderColor: '#e0e0e0',
-                          color: 'text.primary',
-                          '&:hover': {
-                            borderColor: 'primary.main'
-                          }
-                        }}
-                      >
-                        Add to cart
-                      </Button>
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                          bgcolor: 'primary.main',
-                          '&:hover': {
-                            bgcolor: 'primary.dark'
-                          }
-                        }}
-                      >
-                        Book Now
-                      </Button>
-                    </Box>
+                    </Stack> */}
+
+                    {/* Pricing Section */}
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      {/* Original Price (Strikethrough) */}
+                      {product.price && (
+                        <Typography variant="body1" color="text.secondary" sx={{ fontFamily: `"Montserrat", sans-serif`, textDecoration: "line-through" }}>
+                          ₹{product.price}
+                        </Typography>
+                      )}
+
+                      {/* Final Price (Highlighted) */}
+                      <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="h6" color="error" fontWeight="bold">
+                      ₹{product.finalPrice || product.price}
+                      </Typography>
+                    </Stack>
+
+                    {/* Add to Cart Button */}
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      onClick={(e) => handleAddToCart(e, product._id)}
+                      sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                    >
+                      Add to Cart
+                    </Button>
                   </Stack>
                 </CardContent>
               </Card>
@@ -259,15 +314,19 @@ const CarRentalPage = () => {
           ))}
         </Grid>
 
-        {/* See More Button */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-          <Button color="primary">
-            See More
-          </Button>
-        </Box>
       </Container>
+      {isLoginOpen && <LoginModal show={isLoginOpen} handleClose={closeLoginModal} />}
+
+      {/* Snackbar for Success Message */}
+      <Snackbar
+        open={!!successMessage}
+        autoHideDuration={3000}
+        onClose={() => setSuccessMessage("")}
+        message={successMessage}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      />
     </Box>
   );
 };
 
-export default CarRentalPage;
+export default ProductsPage;

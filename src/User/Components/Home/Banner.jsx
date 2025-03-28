@@ -1,7 +1,13 @@
 import React from 'react';
 import { Typography, Box, Button, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const BannerSection = () => {
+
+    const navigate=useNavigate()
+    const handleViewMore = () => {
+        navigate("/allproducts"); // Navigate to a dedicated deals page
+      };
     return (
         <Box
             sx={{
@@ -31,7 +37,8 @@ const BannerSection = () => {
                                 fontSize: { xs: '28px', md: '40px' },
                                 fontWeight: 'bold',
                                 marginBottom: 2,
-                                lineHeight: 1.2
+                                lineHeight: 1.2,
+                                fontFamily: `"Montserrat", sans-serif`,
                             }}
                         >
                             Your One-Stop Online Shopping Destination
@@ -40,7 +47,8 @@ const BannerSection = () => {
                             sx={{
                                 color: 'text.secondary',
                                 marginBottom: 3,
-                                fontSize: '16px'
+                                fontSize: '16px',
+                                fontFamily: `"Montserrat", sans-serif`,
                             }}
                         >
                             Discover A World Of Endless Possibilities With Our E-Commerce Platform. From Electronics To
@@ -57,8 +65,10 @@ const BannerSection = () => {
                                 textTransform: 'none',
                                 '&:hover': {
                                     backgroundColor: '#1565c0'
-                                }
+                                },
+                                fontFamily: `"Montserrat", sans-serif`,
                             }}
+                            onClick={handleViewMore}
                         >
                             View More
                         </Button>

@@ -1,39 +1,109 @@
-import React, { useState } from "react";
-import { Container, Grid, Typography, Button, Box, Card, CardMedia, Chip, Stack } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Container, Grid, Typography, Button, Box, Card, CardMedia, Chip, Stack, CircularProgress, Snackbar } from "@mui/material";
 import { FavoriteBorder } from "@mui/icons-material";
-
-const images = [
-  "https://i.postimg.cc/2ySgZgwP/85c8c3f8948346cfb75dc8c7c996b6d7.png", // Main image
-  "https://i.postimg.cc/2ySgZgwP/85c8c3f8948346cfb75dc8c7c996b6d7.png", // Thumbnail 1
-  "https://i.postimg.cc/2ySgZgwP/85c8c3f8948346cfb75dc8c7c996b6d7.png", // Thumbnail 2
-  "https://i.postimg.cc/2ySgZgwP/85c8c3f8948346cfb75dc8c7c996b6d7.png", // Thumbnail 3
-];
+import { addToCart, addToWishlist, viewProductsById } from "../../../Services/allApi";
+import placeholder from "../../../Assets/PlacHolder.png";
+import ProductRatings from "./ProductRatings";
+import LoginModal from "../LoginModel";
 
 const SingleProductView = () => {
-  const [mainImage, setMainImage] = useState(images[0]);
+  const { productId } = useParams();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
+  const openLoginModal = () => {
+    setIsLoginOpen(true);
+  };
+
+  const closeLoginModal = () => {
+    setIsLoginOpen(false);
+  };
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const data = await viewProductsById(productId);
+        setProduct(data.product);
+      } catch (error) {
+        console.error("Error fetching product data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [productId]);
+
+  const handleAddToCart = async (e, productId) => {
+    e.stopPropagation();
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      openLoginModal();
+      return;
+    }
+    try {
+      await addToCart(userId, productId, 1);
+      setSuccessMessage("Product added to cart successfully!");
+    } catch (error) {
+      console.error("Error adding product to cart", error);
+      alert("Failed to add product to cart. Try again.");
+    }
+  };
+
+  const handleAddToWishlist = async (e, productId) => {
+    e.stopPropagation();
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      openLoginModal();
+      return;
+    }
+    try {
+      await addToWishlist(userId, productId);
+      setSuccessMessage("Product added to wishlist successfully!");
+    } catch (error) {
+      console.error("Error adding product to wishlist", error);
+      alert("Failed to add product to wishlist. Try again.");
+    }
+  };
+
+  if (loading) {
+    return <CircularProgress />;
+  }
+
+  if (!product) {
+    return <Typography variant="h6" sx={{ fontFamily: `"Montserrat", sans-serif` }}>Product not found</Typography>;
+  }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 ,marginBottom:"30px"}}>
+    <Container maxWidth="lg" sx={{ mt: 4, marginBottom: "30px", position: "relative" }}>
       <Grid container spacing={4}>
         {/* Product Image */}
         <Grid item xs={12} md={6}>
-          <Card>
+          <Card sx={{ width: "100%", height: 350, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
             <CardMedia
               component="img"
-              image={mainImage}
+              image={placeholder}
               alt="Product Image"
-              sx={{ width: "100%", height: "auto" }}
+              sx={{ width: "100%", height: "100%", objectFit: "contain" }}
             />
           </Card>
-          <Stack direction="row" spacing={1} mt={2}>
-            {images.map((img, index) => (
+          <Stack direction="row" spacing={1} mt={2} sx={{ overflowX: "auto", py: 1 }}>
+            {product.images.map((img, index) => (
               <Box
                 key={index}
                 component="img"
-                src={img}
+                src={placeholder}
                 alt={`Thumbnail ${index}`}
-                sx={{ width: 60, height: 60, cursor: "pointer", border: mainImage === img ? "2px solid black" : "none" }}
-                onClick={() => setMainImage(img)}
+                sx={{
+                  width: 60,
+                  height: 60,
+                  cursor: "pointer",
+                  border: "2px solid black",
+                  objectFit: "cover",
+                  flexShrink: 0,
+                }}
               />
             ))}
           </Stack>
@@ -41,45 +111,136 @@ const SingleProductView = () => {
 
         {/* Product Details */}
         <Grid item xs={12} md={6}>
-          <Stack spacing={2}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="h5" fontWeight="bold">
-                JBL Tune 770NC Active Noise Cancelling Headphones
+          <Box
+            sx={{
+              '@media (max-width: 900px)': {
+                paddingBottom: '80px',
+              },
+            }}
+          >
+            <Stack
+              spacing={2}
+              sx={{
+                maxHeight: { md: "500px" }, // Only set maxHeight on medium screens and up
+                overflowY: { md: "auto" }, // Only enable vertical scrolling on medium screens and up
+                paddingRight: { md: "10px" }, // Add padding only on larger screens
+              }}
+            >
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography variant="h5" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                  {product.name}
+                </Typography>
+              </Box>
+
+              <Box>
+                <Box display="flex" alignItems="center">
+                  <Typography variant="h6" color="primary" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                    ₹{product.finalPrice}
+                    <Typography component="span" sx={{ textDecoration: "line-through", color: "gray", ml: 1, fontFamily: `"Montserrat", sans-serif` }}>
+                      ₹{product.price}
+                    </Typography>
+                    <Chip label="10% Off" color="success" sx={{ ml: 2, fontFamily: `"Montserrat", sans-serif` }} />
+                  </Typography>
+                </Box>
+
+                <Box display="flex" alignItems="center" sx={{ mt: 1 }}>
+                  <Box sx={{ fontFamily: `"Montserrat", sans-serif`, backgroundColor: "#2E7D32", color: "white", px: 1, py: 0.5, borderRadius: 1, fontWeight: "bold", display: "flex", alignItems: "center" }}>
+                    {product.averageRating} ★
+                  </Box>
+                  <Typography variant="body1" sx={{ fontFamily: `"Montserrat", sans-serif`, ml: 1, fontWeight: "bold", color: "#666" }}>
+                    {product.totalReviews.toLocaleString()} Ratings & {product.reviews.length.toLocaleString()} Reviews
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>Brand: {product.brand}</Typography>
+
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>Description</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                {product.description}
               </Typography>
-              <FavoriteBorder sx={{ cursor: "pointer" }} />
-            </Box>
 
-            <Typography variant="h6" color="primary">
-              ₹4,999 <Typography component="span" sx={{ textDecoration: "line-through", color: "gray", ml: 1 }}>₹9,999</Typography>
-              <Chip label="50% Off" color="success" sx={{ ml: 2 }} />
-            </Typography>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>Specifications</Typography>
+              <ul style={{ fontFamily: `"Montserrat", sans-serif` }}>
+                {Object.entries(product.attributes).map(([key, value]) => (
+                  <li key={key}>{`${key}: ${value}`}</li>
+                ))}
+              </ul>
 
-            <Typography variant="subtitle1" fontWeight="bold">Color</Typography>
-            <Stack direction="row" spacing={1}>
-              {["gray", "black", "blue"].map((color, index) => (
-                <Box key={index} sx={{ width: 30, height: 30, bgcolor: color, borderRadius: "50%", cursor: "pointer" }} />
-              ))}
+              <ProductRatings />
             </Stack>
+          </Box>
+        </Grid>
 
-            <Typography variant="subtitle1" fontWeight="bold">Specifications</Typography>
-            <ul>
-              <li>With Mic: Yes</li>
-              <li>Bluetooth version: 5.3</li>
-              <li>Battery life: 70 hrs</li>
-              <li>Active Noise Cancelling Headphones</li>
-              <li>Fast Charging: 5 min = 3 Hours</li>
-            </ul>
+        {/* Fixed buttons for mobile */}
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 50,
+            left: 0,
+            right: 0,
+            backgroundColor: 'white',
+            padding: 2,
+            boxShadow: '0px -2px 10px rgba(0,0,0,0.1)',
+            display: { xs: 'block', md: 'none' },
+            zIndex: 1000,
+          }}
+        >
+          <Stack direction="row" spacing={2}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              fullWidth 
+              onClick={(e) => handleAddToCart(e, product._id)}
+              sx={{ fontFamily: `"Montserrat", sans-serif` }}
+            >
+              Add To Cart
+            </Button>
+            <Button 
+              variant="outlined" 
+              color="primary" 
+              fullWidth 
+              onClick={(e) => handleAddToWishlist(e, product._id)}
+              sx={{ fontFamily: `"Montserrat", sans-serif` }}
+            >
+              Add To Wishlist
+            </Button>
+          </Stack>
+        </Box>
 
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-              <Button variant="contained" color="primary" fullWidth>
-                Buy Now
-              </Button>
-              <Button variant="outlined" color="primary" fullWidth>
-                Add to Cart
-              </Button>
-            </Stack>
+        {/* Regular buttons for desktop */}
+        <Grid item xs={12} md={6} sx={{ display: { xs: 'none', md: 'block' } }}>
+          <Stack direction="row" spacing={2}>
+            <Button 
+              sx={{ fontFamily: `"Montserrat", sans-serif` }} 
+              variant="contained" 
+              color="primary" 
+              fullWidth 
+              onClick={(e) => handleAddToCart(e, product._id)}
+            >
+              Add To Cart
+            </Button>
+            <Button 
+              sx={{ fontFamily: `"Montserrat", sans-serif` }} 
+              variant="outlined" 
+              color="primary" 
+              fullWidth 
+              onClick={(e) => handleAddToWishlist(e, product._id)}
+            >
+              Add To Wishlist
+            </Button>
           </Stack>
         </Grid>
+
+        {isLoginOpen && <LoginModal show={isLoginOpen} handleClose={closeLoginModal} />}
+
+        <Snackbar
+          open={!!successMessage}
+          autoHideDuration={3000}
+          onClose={() => setSuccessMessage("")}
+          message={successMessage}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        />
       </Grid>
     </Container>
   );
