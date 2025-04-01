@@ -76,6 +76,7 @@ const Header = () => {
       navigate(path);
     }
   };
+  //test
   useEffect(() => {
     // Dynamically set padding based on header height
     const header = document.querySelector('.fixed-top');
