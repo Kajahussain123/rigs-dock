@@ -12,7 +12,7 @@ const CartPage = () => {
   const [couponError, setCouponError] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const BASE_URL = "http://localhost:3006/uploads/";
+  const BASE_URL = "https://rigsdock.com/uploads/";
   const navigate = useNavigate();
 
   const userId = localStorage.getItem("userId"); // Get userId from localStorage
@@ -211,10 +211,10 @@ const CartPage = () => {
                 <CardMedia
                   component="img"
                   sx={{ width: 120, height: 120, objectFit: "contain", borderRadius: 1, mr: 2 }}
-                  image={placeholder}
-                  alt={item.name}
+                  image={item.image} 
+                                 alt={item.name}
                 />
-                <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ flexGrow: 1  }}>
                   <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="subtitle1" fontWeight="bold" gutterBottom>
                     {item.name}
                   </Typography>

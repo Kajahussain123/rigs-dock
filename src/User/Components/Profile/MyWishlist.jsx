@@ -17,7 +17,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { getWishlist, removeWishlist } from "../../../Services/allApi";
 import { useNavigate } from "react-router-dom";
 
-const BASE_URL = "http://localhost:3006/uploads/";
+const BASE_URL = "https://rigsdock.com/uploads/";
 
 const MyWishlist = () => {
   const [wishlist, setWishlist] = useState([]);

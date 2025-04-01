@@ -26,65 +26,69 @@ import { searchProducts } from "../../../Services/allApi"; // Import the search 
 import LoginModal from "../LoginModel";
 import FilterSearch from "./FilterSearch";
 
-const ImageCarousel = ({ images }) => {
+const ImageCarousel = ({ images = [] }) => {
+    const BASE_URL = "https://rigsdock.com/uploads/";
+    const defaultImage = "placeholder.png"; // Replace with an actual placeholder if needed
+    const formattedImages = images.length ? images : [`${BASE_URL}${defaultImage}`];
+  
     const [currentImage, setCurrentImage] = useState(0);
-
+  
     const nextImage = (e) => {
-        e.stopPropagation();
-        setCurrentImage((prev) => (prev + 1) % images.length);
+      e.stopPropagation();
+      setCurrentImage((prev) => (prev + 1) % formattedImages.length);
     };
-
+  
     const prevImage = (e) => {
-        e.stopPropagation();
-        setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
+      e.stopPropagation();
+      setCurrentImage((prev) => (prev - 1 + formattedImages.length) % formattedImages.length);
     };
-
+  
     return (
-        <Box sx={{ position: "relative" }}>
-            <CardMedia
-                component="img"
-                height="200"
-                image={images.length ? images[currentImage] : placeholder}
-                alt="Product Image"
-                sx={{ objectFit: "cover" }}
-            />
-            {images.length > 1 && (
-                <>
-                    <Button
-                        sx={{
-                            position: "absolute",
-                            left: 0,
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            minWidth: "36px",
-                            p: 0,
-                            color: "white",
-                            "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
-                        }}
-                        onClick={prevImage}
-                    >
-                        <ChevronLeftIcon />
-                    </Button>
-                    <Button
-                        sx={{
-                            position: "absolute",
-                            right: 0,
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            minWidth: "36px",
-                            p: 0,
-                            color: "white",
-                            "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
-                        }}
-                        onClick={nextImage}
-                    >
-                        <ChevronRightIcon />
-                    </Button>
-                </>
-            )}
-        </Box>
+      <Box sx={{ position: "relative" }}>
+        <CardMedia
+          component="img"
+          height="200"
+          image={formattedImages[currentImage]} // Ensure correct image is displayed
+          alt="Product Image"
+          sx={{ objectFit: "cover" }}
+        />
+        {formattedImages.length > 1 && (
+          <>
+            <Button
+              sx={{
+                position: "absolute",
+                left: 0,
+                top: "50%",
+                transform: "translateY(-50%)",
+                minWidth: "36px",
+                p: 0,
+                color: "white",
+                "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
+              }}
+              onClick={prevImage}
+            >
+              <ChevronLeftIcon />
+            </Button>
+            <Button
+              sx={{
+                position: "absolute",
+                right: 0,
+                top: "50%",
+                transform: "translateY(-50%)",
+                minWidth: "36px",
+                p: 0,
+                color: "white",
+                "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
+              }}
+              onClick={nextImage}
+            >
+              <ChevronRightIcon />
+            </Button>
+          </>
+        )}
+      </Box>
     );
-};
+  };
 
 const SearchResultsPage = () => {
     const navigate = useNavigate();
@@ -264,8 +268,8 @@ const SearchResultsPage = () => {
                                 </IconButton>
 
                                 {/* Image Carousel */}
-                                <ImageCarousel images={[placeholder]} />
-
+{/* Image Carousel */}
+<ImageCarousel images={[placeholder]} />
                                 <CardContent>
                                     <Stack spacing={1}>
                                         {/* Product Name (Truncated to 10 characters) */}

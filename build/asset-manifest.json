@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/static/css/main.49faa5e3.css",
-    "main.js": "/static/js/main.5cc67564.js",
+    "main.js": "/static/js/main.d1029963.js",
     "static/media/PlacHolder.png": "/static/media/PlacHolder.cdec2a0166c074290c09.png",
     "index.html": "/index.html",
     "main.49faa5e3.css.map": "/static/css/main.49faa5e3.css.map",
-    "main.5cc67564.js.map": "/static/js/main.5cc67564.js.map"
+    "main.d1029963.js.map": "/static/js/main.d1029963.js.map"
   },
   "entrypoints": [
     "static/css/main.49faa5e3.css",
-    "static/js/main.5cc67564.js"
+    "static/js/main.d1029963.js"
   ]
 }

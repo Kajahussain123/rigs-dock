@@ -13,6 +13,16 @@ const SingleProductView = () => {
   const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const BASE_URL = "https://rigsdock.com/uploads/";
+
+  const [selectedImage, setSelectedImage] = useState("");
+
+  // Set default image when the product changes
+  useEffect(() => {
+    if (product?.images?.length > 0) {
+      setSelectedImage(`${BASE_URL}${product.images[0]}`);
+    }
+  }, [product]);
 
   const openLoginModal = () => {
     setIsLoginOpen(true);
@@ -81,33 +91,46 @@ const SingleProductView = () => {
       <Grid container spacing={4}>
         {/* Product Image */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ width: "100%", height: 350, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-            <CardMedia
-              component="img"
-              image={placeholder}
-              alt="Product Image"
-              sx={{ width: "100%", height: "100%", objectFit: "contain" }}
-            />
-          </Card>
-          <Stack direction="row" spacing={1} mt={2} sx={{ overflowX: "auto", py: 1 }}>
-            {product.images.map((img, index) => (
-              <Box
-                key={index}
-                component="img"
-                src={placeholder}
-                alt={`Thumbnail ${index}`}
-                sx={{
-                  width: 60,
-                  height: 60,
-                  cursor: "pointer",
-                  border: "2px solid black",
-                  objectFit: "cover",
-                  flexShrink: 0,
-                }}
-              />
-            ))}
-          </Stack>
-        </Grid>
+      <Card
+        sx={{
+          width: "100%",
+          height: 350,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
+        }}
+      >
+        {selectedImage && ( // Render only when selectedImage is set
+          <CardMedia
+            component="img"
+            image={selectedImage}
+            alt="Product Image"
+            sx={{ width: "100%", height: "100%", objectFit: "contain" }}
+          />
+        )}
+      </Card>
+
+      <Stack direction="row" spacing={1} mt={2} sx={{ overflowX: "auto", py: 1 }}>
+        {product?.images?.map((img, index) => (
+          <Box
+            key={index}
+            component="img"
+            src={`${BASE_URL}${img}`}
+            alt={`Thumbnail ${index}`}
+            onClick={() => setSelectedImage(`${BASE_URL}${img}`)}
+            sx={{
+              width: 60,
+              height: 60,
+              cursor: "pointer",
+              border: selectedImage.includes(img) ? "3px solid #a89160" : "2px solid black", // Highlight selected
+              objectFit: "cover",
+              flexShrink: 0,
+            }}
+          />
+        ))}
+      </Stack>
+    </Grid>
 
         {/* Product Details */}
         <Grid item xs={12} md={6}>

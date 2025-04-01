@@ -8,7 +8,7 @@ import placeholder from '../../../Assets/PlacHolder.png';
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
-  const BASE_URL = "http://localhost:3006/uploads/";
+  const BASE_URL = "https://rigsdock.com/uploads/";
   const userId = localStorage.getItem("userId");
   const navigate = useNavigate();  // ✅ Initialize navigate
 
@@ -61,7 +61,7 @@ const MyOrders = () => {
               <Grid item xs={3} sm={2}>
                 <CardMedia
                   component="img"
-                  image={placeholder}
+                  image={`https://rigsdock.com/uploads/${item.product.images?.[0]}`}
                   alt={item.product.name}
                   sx={{
                     width: "100%",

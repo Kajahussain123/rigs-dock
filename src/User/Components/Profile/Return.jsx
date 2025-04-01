@@ -85,7 +85,8 @@ const ReturnProduct = () => {
                     <CardMedia
                         component="img"
                         // image={product.image}
-                        image={placeholder}
+                        image={`https://rigsdock.com/uploads/${product.images?.[0]}`}
+                       
                         alt={product.name}
                         sx={{ width: 100, height: 100, objectFit: "contain", borderRadius: 2, mr: 3 }}
                     />

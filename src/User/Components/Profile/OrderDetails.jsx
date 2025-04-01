@@ -22,7 +22,7 @@ const OrderDetails = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const BASE_URL = "http://localhost:3006/uploads/";
+  const BASE_URL = "https://rigsdock.com/uploads/";
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -176,7 +176,8 @@ const SimilarProducts = () => {
               <CardMedia
                 component="img"
                 height="180"
-                image={placeholder}
+                // image={placeholder}
+                image={`https://rigsdock.com/uploads/${product?.images?.[0]}`}
                 alt={product.name}
                 sx={{ objectFit: "cover", borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
               />

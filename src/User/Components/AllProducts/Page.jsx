@@ -26,17 +26,21 @@ import { getAllProducts } from "../../../Services/allApi";
 import LoginModal from "../LoginModel";
 import FilterSection from "./Filter";
 
-const ImageCarousel = ({ images }) => {
+const ImageCarousel = ({ images = [] }) => {
+  const BASE_URL = "https://rigsdock.com/uploads/";
+  const defaultImage = "placeholder.png"; // Replace with an actual placeholder if needed
+  const formattedImages = images.length ? images : [`${BASE_URL}${defaultImage}`];
+
   const [currentImage, setCurrentImage] = useState(0);
 
   const nextImage = (e) => {
     e.stopPropagation();
-    setCurrentImage((prev) => (prev + 1) % images.length);
+    setCurrentImage((prev) => (prev + 1) % formattedImages.length);
   };
 
   const prevImage = (e) => {
     e.stopPropagation();
-    setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentImage((prev) => (prev - 1 + formattedImages.length) % formattedImages.length);
   };
 
   return (
@@ -44,11 +48,11 @@ const ImageCarousel = ({ images }) => {
       <CardMedia
         component="img"
         height="200"
-        image={images.length ? images[currentImage] : placeholder}
+        image={formattedImages[currentImage]} // Ensure correct image is displayed
         alt="Product Image"
         sx={{ objectFit: "cover" }}
       />
-      {images.length > 1 && (
+      {formattedImages.length > 1 && (
         <>
           <Button
             sx={{
@@ -257,7 +261,8 @@ const AllProductsPage = () => {
                 </IconButton>
 
                 {/* Image Carousel */}
-                <ImageCarousel images={[placeholder]} />
+<ImageCarousel images={product?.images?.map(img => `https://rigsdock.com/uploads/${img}`) || []} />
+
 
                 <CardContent>
                   <Stack spacing={1}>

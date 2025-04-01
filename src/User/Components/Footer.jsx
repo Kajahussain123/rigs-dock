@@ -10,7 +10,7 @@ useEffect(() => {
 
   return (
     <Box sx={{ backgroundColor: "#1E1E2D", color: "white", mt: 5  }}>
-      <Box sx={{ backgroundColor: "#673AB7", p: 2, textAlign: "center" }}>
+      {/* <Box sx={{ backgroundColor: "#673AB7", p: 2, textAlign: "center" }}>
         <Typography style={{fontFamily: `"Montserrat", sans-serif`,}}>Get connected with us on social networks:</Typography>
         <Box sx={{ mt: 1 }}>
           <IconButton sx={{ color: "white" }}><Facebook /></IconButton>
@@ -20,7 +20,7 @@ useEffect(() => {
           <IconButton sx={{ color: "white" }}><LinkedIn /></IconButton>
           <IconButton sx={{ color: "white" }}><GitHub /></IconButton>
         </Box>
-      </Box>
+      </Box> */}
 
       <Container sx={{ py: 5 }}>
         <Grid container spacing={4}>

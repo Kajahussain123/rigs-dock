@@ -16,7 +16,7 @@ const CategoryNav = () => {
   const navigate = useNavigate();
   const [activeMainCategory, setActiveMainCategory] = useState(null);
 
-  const BASE_URL = "http://localhost:3006/uploads/";
+  const BASE_URL = "https://rigsdock.com/uploads/";
 
   useEffect(() => {
     const fetchMainCategories = async () => {

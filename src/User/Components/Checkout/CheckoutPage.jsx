@@ -292,7 +292,7 @@ const CheckoutPage = () => {
                         objectFit: "contain",
                         maxHeight: "100px",
                       }}
-                      image={placeholder}
+                      image={`https://rigsdock.com/uploads/${item.product.images?.[0]}`}
                       alt={item.product.name}
                     />
                     <CardContent style={{ flex: "1 0 auto", padding: "1rem" }}>

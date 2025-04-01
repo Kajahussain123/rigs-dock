@@ -6,7 +6,7 @@ import { getAllProducts, addToCart } from "../../../Services/allApi";
 import placeholder from "../../../Assets/PlacHolder.png"
 import LoginModal from "../LoginModel";
 
-const BASE_URL = "http://localhost:3006/uploads/";
+const BASE_URL = "https://rigsdock.com/uploads/";
 
 const ProductCard = ({ product, handleAddToCart }) => {
   const navigate = useNavigate();
@@ -20,8 +20,8 @@ const ProductCard = ({ product, handleAddToCart }) => {
         {product.brand}
       </Typography> */}
       <img
-        // src={`${BASE_URL}/${product.images[0]}`}
-        src={placeholder}
+        src={`${BASE_URL}/${product.images[0]}`}
+        // src={placeholder}
         alt={product.name}
         style={{ width: "100px", margin: "10px auto" }}
       />
@@ -154,8 +154,8 @@ const OurProducts = () => {
                   Save 10%
                 </Typography>
                 <img
-                  // src={`${BASE_URL}/${products[0].images[0]}`}
-                  src={placeholder}
+                  src={`${BASE_URL}/${products[0].images[0]}`}
+                  // src={placeholder}
                   alt={products[0].name}
                   style={{ width: "100%" }}
                 />

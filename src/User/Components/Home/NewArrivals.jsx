@@ -8,7 +8,7 @@ import LoginModal from "../LoginModel";
 const NewArrivals = () => {
   const [products, setProducts] = useState([]);
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
-  const BASE_URL = "http://localhost:3006/uploads/";
+  const BASE_URL = "https://rigsdock.com/uploads/";
   const [successMessage, setSuccessMessage] = useState(""); // State for Snackbar
   const navigate = useNavigate();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -82,12 +82,7 @@ const NewArrivals = () => {
         <Typography variant="h5" component="h2" sx={{ fontFamily: `"Montserrat", sans-serif`, }}>
           <Box component="span" sx={{ color: "primary.main", fontFamily: `"Montserrat", sans-serif`, }}>New</Box> Arrivals
         </Typography>
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          <Typography sx={{ fontWeight: "bold" }}>End in:</Typography>
-          <Typography sx={{ fontWeight: "bold" }}>{String(timeLeft.hours).padStart(2, "0")}</Typography> :
-          <Typography sx={{ fontWeight: "bold" }}>{String(timeLeft.minutes).padStart(2, "0")}</Typography> :
-          <Typography sx={{ fontWeight: "bold" }}>{String(timeLeft.seconds).padStart(2, "0")}</Typography>
-        </Box>
+        
       </Box>
 
       {/* Product List */}
@@ -127,8 +122,8 @@ const NewArrivals = () => {
               <CardMedia
                 component="img"
                 height="140"
-                // image={product.images?.[0] ? `${BASE_URL}${product.images[0]}` : placeholder} 
-                image={placeholder}
+                image={product.images?.[0] ? `${BASE_URL}${product.images[0]}` : placeholder} 
+                // image={placeholder}
                 alt={product.name}
                 sx={{ objectFit: "contain", backgroundColor: "#f5f5f5" }}
               />

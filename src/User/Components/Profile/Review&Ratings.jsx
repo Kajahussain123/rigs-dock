@@ -66,8 +66,8 @@ const MyReviews = () => {
                 {review.images.length > 0 ? (
                   <CardMedia
                     component="img"
-                    // image={review.images[0]}
-                    image={placeholder}
+                    image={`https://rigsdock.com/uploads/${review.product.images?.[0]}`}
+                    // image={placeholder}
                     alt={review.product.name}
                     sx={{
                       width: "100%",

@@ -12,7 +12,7 @@ const WishlistPage = () => {
   const navigate = useNavigate();
 
   const userId = localStorage.getItem("userId");
-  const BASE_URL = "http://localhost:3006/uploads/";
+  const BASE_URL = "https://rigsdock.com/uploads/";
 
   useEffect(() => {
     const fetchWishlist = async () => {
