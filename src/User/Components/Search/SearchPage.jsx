@@ -30,65 +30,65 @@ const ImageCarousel = ({ images = [] }) => {
     const BASE_URL = "https://rigsdock.com/uploads/";
     const defaultImage = "placeholder.png"; // Replace with an actual placeholder if needed
     const formattedImages = images.length ? images : [`${BASE_URL}${defaultImage}`];
-  
+
     const [currentImage, setCurrentImage] = useState(0);
-  
+
     const nextImage = (e) => {
-      e.stopPropagation();
-      setCurrentImage((prev) => (prev + 1) % formattedImages.length);
+        e.stopPropagation();
+        setCurrentImage((prev) => (prev + 1) % formattedImages.length);
     };
-  
+
     const prevImage = (e) => {
-      e.stopPropagation();
-      setCurrentImage((prev) => (prev - 1 + formattedImages.length) % formattedImages.length);
+        e.stopPropagation();
+        setCurrentImage((prev) => (prev - 1 + formattedImages.length) % formattedImages.length);
     };
-  
+
     return (
-      <Box sx={{ position: "relative" }}>
-        <CardMedia
-          component="img"
-          height="200"
-          image={formattedImages[currentImage]} // Ensure correct image is displayed
-          alt="Product Image"
-          sx={{ objectFit: "cover" }}
-        />
-        {formattedImages.length > 1 && (
-          <>
-            <Button
-              sx={{
-                position: "absolute",
-                left: 0,
-                top: "50%",
-                transform: "translateY(-50%)",
-                minWidth: "36px",
-                p: 0,
-                color: "white",
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
-              }}
-              onClick={prevImage}
-            >
-              <ChevronLeftIcon />
-            </Button>
-            <Button
-              sx={{
-                position: "absolute",
-                right: 0,
-                top: "50%",
-                transform: "translateY(-50%)",
-                minWidth: "36px",
-                p: 0,
-                color: "white",
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
-              }}
-              onClick={nextImage}
-            >
-              <ChevronRightIcon />
-            </Button>
-          </>
-        )}
-      </Box>
+        <Box sx={{ position: "relative" }}>
+      <CardMedia
+        component="img"
+        height="200"
+        image={formattedImages[currentImage]} // Ensure correct image is displayed
+        alt="Product Image"
+        sx={{ objectFit: "cover" }}
+      />
+      {formattedImages.length > 1 && (
+        <>
+          <Button
+            sx={{
+              position: "absolute",
+              left: 0,
+              top: "50%",
+              transform: "translateY(-50%)",
+              minWidth: "36px",
+              p: 0,
+              color: "white",
+              "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
+            }}
+            onClick={prevImage}
+          >
+            <ChevronLeftIcon />
+          </Button>
+          <Button
+            sx={{
+              position: "absolute",
+              right: 0,
+              top: "50%",
+              transform: "translateY(-50%)",
+              minWidth: "36px",
+              p: 0,
+              color: "white",
+              "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
+            }}
+            onClick={nextImage}
+          >
+            <ChevronRightIcon />
+          </Button>
+        </>
+      )}
+    </Box>
     );
-  };
+};
 
 const SearchResultsPage = () => {
     const navigate = useNavigate();
@@ -267,9 +267,9 @@ const SearchResultsPage = () => {
                                     {wishlist.has(product._id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                                 </IconButton>
 
+                              
                                 {/* Image Carousel */}
-{/* Image Carousel */}
-<ImageCarousel images={[placeholder]} />
+                                <ImageCarousel images={product?.images?.map(img => `https://rigsdock.com/uploads/${img}`) || []} />
                                 <CardContent>
                                     <Stack spacing={1}>
                                         {/* Product Name (Truncated to 10 characters) */}
@@ -283,14 +283,14 @@ const SearchResultsPage = () => {
                                         </Typography>
 
                                         {/* Rating Section */}
-                                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                                        {/* <Stack direction="row" alignItems="center" spacing={0.5}>
                                             <Typography variant="body2" sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold", color: "#ff9800" }}>
                                                 ⭐ {product.averageRating > 0 ? product.averageRating : "0 Ratings"}
                                             </Typography>
                                             <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="body2" color="text.secondary">
                                                 ({product.totalReviews > 0 ? `${product.totalReviews} Reviews` : "0 Reviews"})
                                             </Typography>
-                                        </Stack>
+                                        </Stack> */}
 
                                         {/* Pricing Section */}
                                         <Stack direction="row" spacing={1} alignItems="center">
@@ -303,7 +303,7 @@ const SearchResultsPage = () => {
 
                                             {/* Final Price (Highlighted) */}
                                             <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="h6" color="error" fontWeight="bold">
-                                            ₹{product.finalPrice || product.price}
+                                                ₹{product.finalPrice || product.price}
                                             </Typography>
                                         </Stack>
 

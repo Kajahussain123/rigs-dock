@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Container, Button, Card, CardContent, CardMedia, CircularProgress, Snackbar } from '@mui/material';
+import { Typography, Box, Container, Button, Card, CardMedia, CircularProgress, Snackbar } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { addToCart, dealOfTheDay } from '../../../Services/allApi';
-import placeholder from "../../../Assets/PlacHolder.png"
 import { useNavigate } from 'react-router-dom';
 import LoginModal from '../LoginModel';
 
@@ -15,7 +14,7 @@ const DealsSlider = () => {
     const [deals, setDeals] = useState([]);
     const [loading, setLoading] = useState(true);
     const [successMessage, setSuccessMessage] = useState("");
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
 
@@ -73,216 +72,229 @@ const DealsSlider = () => {
     return (
         <Box sx={{ width: '100%', minHeight: '40vh', background: 'linear-gradient(to bottom,#E7EFF9,#FFFFFF)' }}>
             <Container maxWidth="lg" sx={{ py: 4 }}>
-                <Box sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: 4 }}>
-                    {/* Deal Section */}
-                    <Box sx={{ flex: '1 1 30%', minWidth: isMobile ? '100%' : 250, order: 0 }}>
-                        <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold', fontFamily: `"Montserrat", sans-serif` }}>
-                            DEALS OF <span style={{ color: '#1976d2' }}>THE</span>
-                            <br />
-                            <span style={{ color: '#1976d2' }}>DAY</span>
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ my: 2, fontFamily: `"Montserrat", sans-serif` }}>
-                            Limited time offers on top brands. Don't miss these exclusive deals!
-                        </Typography>
-                        {!isMobile && (
-                            <Button onClick={handleViewMore} variant="contained" sx={{ fontFamily: `"Montserrat", sans-serif`, textTransform: 'none', borderRadius: 1 }}>
-                                View More
-                            </Button>
-                        )}
-                    </Box>
-
-                    {/* Scrollable Product Section */}
+                {/* Entire content is now in a single scrollable container */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 3,
+                        overflowX: 'auto',
+                        scrollSnapType: 'x mandatory',
+                        scrollbarWidth: 'none',
+                        '&::-webkit-scrollbar': { display: 'none' },
+                        '-webkit-overflow-scrolling': 'touch',
+                        pb: 2
+                    }}
+                >
+                    {/* Left side image (now part of the scrollable items) */}
                     <Box
                         sx={{
-                            flex: '1 1 70%',
-                            overflowX: 'auto',
+                            flexShrink: 0,
+                            scrollSnapAlign: 'start',
+                            width: isMobile ? 150 : 250,
+                            height: isMobile ? 150 : 200,
                             display: 'flex',
-                            flexWrap: 'nowrap',
-                            gap: 3,
-                            padding: '10px 0',
-                            scrollSnapType: 'x mandatory',
-                            whiteSpace: 'nowrap',
-                            width: '100%',
-                            scrollbarWidth: 'none',
-                            '&::-webkit-scrollbar': { display: 'none' },
-                            '-webkit-overflow-scrolling': 'touch',
-                            order: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 2,
+                            overflow: 'hidden',
+                            position: 'relative'
                         }}
                     >
-                        {deals.map((deal) => {
-                            const discountPercentage = calculateDiscountPercentage(deal.product.price, deal.offerPrice);
-                            
-                            return (
-                                <Card
-                                    key={deal._id}
+                        <CardMedia
+                            component="img"
+                            sx={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover'
+                            }}
+                            image="https://i.postimg.cc/dVbW8VCp/Screenshot-2025-04-02-150221-removebg-preview.png"
+                            alt="Deal of the Day"
+                        />
+                    </Box>
+
+                    {/* Deal products - UPDATED CARD DESIGN */}
+                    {deals.map((deal) => {
+                        const discountPercentage = calculateDiscountPercentage(deal.product.price, deal.offerPrice);
+
+                        return (
+                            <Card
+                                key={deal._id}
+                                sx={{
+                                    width: isMobile ? '90vw' : 550,
+                                    height: isMobile ? 180 : 180,
+                                    boxShadow: '0 4px 8px rgba(0,0,0,0.05)',
+                                    borderRadius: 2,
+                                    flexShrink: 0,
+                                    scrollSnapAlign: 'start',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    position: 'relative',
+                                    overflow: 'visible',
+                                    backgroundColor: '#ffffff',
+                                    border: '1px solid #f0f0f0',
+                                    minWidth: isMobile ? 280 : 550,
+                                }}
+                                onClick={() => navigate(`/single/${deal.product._id}`)}
+                            >
+                                {/* Product Image (Left Side) */}
+                                <Box sx={{
+                                    width: '40%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    padding: isMobile ? 1 : 2,
+                                    backgroundColor: '#f9f9f9',
+                                }}>
+                                    <CardMedia
+                                        component="img"
+                                        sx={{
+                                            height: 'auto',
+                                            maxHeight: '90%',
+                                            width: 'auto',
+                                            maxWidth: '90%',
+                                            objectFit: 'contain'
+                                        }}
+                                        image={`${BASE_URL}${deal.product.images?.[0]}`}
+                                        alt={deal.product.name}
+                                    />
+                                </Box>
+
+                                {/* Content (Right Side) */}
+                                <Box sx={{
+                                    width: '60%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    padding: isMobile ? 1.5 : 2,
+                                }}>
+                                    {/* Product Name */}
+                                    <Typography
+                                        sx={{
+                                            fontFamily: `"Montserrat", sans-serif`,
+                                            fontWeight: 'bold',
+                                            fontSize: isMobile ? '1rem' : '1.5rem',
+                                            marginBottom: 0.5,
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis'
+                                        }}
+                                    >
+                                        {deal.product.name}
+                                    </Typography>
+
+                                    {/* Brand */}
+                                    <Typography
+                                        sx={{
+                                            fontFamily: `"Montserrat", sans-serif`,
+                                            fontSize: isMobile ? '0.8rem' : '1rem',
+                                            color: '#666',
+                                        }}
+                                    >
+                                        Brand: {deal.product.brand}
+                                    </Typography>
+
+                                    {/* Pricing */}
+                                    <Box sx={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        mt: isMobile ? 1 : 2,
+                                        mb: 0.5
+                                    }}>
+                                        <Typography
+                                            sx={{
+                                                fontFamily: `"Montserrat", sans-serif`,
+                                                fontSize: isMobile ? '0.9rem' : '1.2rem',
+                                                color: '#888',
+                                                textDecoration: 'line-through',
+                                            }}
+                                        >
+                                            ₹{deal.product.price}
+                                        </Typography>
+                                        <Typography
+                                            sx={{
+                                                fontFamily: `"Montserrat", sans-serif`,
+                                                fontSize: isMobile ? '1.1rem' : '1.5rem',
+                                                fontWeight: 'bold',
+                                                color: '#0066cc',
+                                                ml: 2
+                                            }}
+                                        >
+                                            ₹{deal.offerPrice}
+                                        </Typography>
+                                    </Box>
+
+                                    {/* View More Button */}
+                                    <Box sx={{ 
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        mt: 'auto'
+                                    }}>
+                                        <Button
+                                            variant="text"
+                                            sx={{
+                                                fontFamily: `"Montserrat", sans-serif`,
+                                                color: '#0066cc',
+                                                textTransform: 'none',
+                                                fontSize: isMobile ? '0.8rem' : '1rem',
+                                                fontWeight: 'medium',
+                                                padding: 0,
+                                            }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate(`/single/${deal.product._id}`);
+                                            }}
+                                        >
+                                            View more
+                                        </Button>
+                                    </Box>
+                                </Box>
+
+                                {/* Discount Tag (Top Right) */}
+                                <Box
                                     sx={{
-                                        width: isMobile ? 300 : 400,
-                                        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                                        borderRadius: 2,
-                                        flexShrink: 0,
-                                        scrollSnapAlign: 'start',
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        height: 200,
-                                        position: 'relative',
-                                        overflow: 'visible', // Ensure circle is fully visible
-                                    }}
-                                >
-                                    {/* Discount Percentage Circle - Moved to left side */}
-                                    <Box sx={{
                                         position: 'absolute',
-                                        top: -10,
-                                        left: -0,
-                                        width: 60,
-                                        height: 60,
-                                        borderRadius: '50%',
-                                        backgroundColor: '#1976d2',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
+                                        top: 0,
+                                        right: 0,
+                                        backgroundColor: '#cc0000',
                                         color: 'white',
                                         fontWeight: 'bold',
-                                        fontSize: '0.7rem',
-                                        zIndex: 1,
-                                        boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                                    }}>
-                                        {`${discountPercentage}% OFF`}
-                                    </Box>
-
-                                    {/* Image on the left - Adjusted to account for circle */}
-                                    <Box sx={{
-                                        width: '40%',
-                                        height: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        p: 1,
-                                        ml: 2 // Add margin to prevent overlap with circle
-                                    }}>
-                                        <CardMedia
-                                            component="img"
-                                            sx={{
-                                                height: 'auto',
-                                                maxHeight: '100%',
-                                                width: 'auto',
-                                                maxWidth: '100%',
-                                                objectFit: 'contain'
-                                            }}
-                                            // image={placeholder}
-                                            image={`https://rigsdock.com/uploads/${deal.product.images?.[0]}`}
-                                            alt={deal.product.name}
-                                        />
-                                    </Box>
-
-                                    {/* Content on the right */}
-                                    <Box sx={{
-                                        width: '60%',
+                                        padding: isMobile ? '10px 8px' : '15px 10px',
+                                        clipPath: "polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%)",
+                                        width: isMobile ? 60 : 80,
+                                        height: isMobile ? 60 : 80,
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        justifyContent: 'space-between',
-                                        p: 2
-                                    }}>
-                                        <Box>
-                                            <Typography
-                                                sx={{
-                                                    fontFamily: `"Montserrat", sans-serif`,
-                                                    fontWeight: 'bold',
-                                                    fontSize: isMobile ? '0.9rem' : '1rem'
-                                                }}
-                                                variant="body1"
-                                                color="text.primary"
-                                                noWrap
-                                            >
-                                                {deal.product.name}
-                                            </Typography>
-                                            <Typography
-                                                sx={{
-                                                    fontFamily: `"Montserrat", sans-serif`,
-                                                    fontSize: '0.8rem',
-                                                    color: 'text.secondary',
-                                                    mt: 0.5
-                                                }}
-                                                variant="body2"
-                                            >
-                                                Brand: {deal.product.brand}
-                                            </Typography>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                                                <Typography
-                                                    sx={{
-                                                        fontFamily: `"Montserrat", sans-serif`,
-                                                        fontSize: isMobile ? '0.9rem' : '1rem',
-                                                        fontWeight: 'bold',
-                                                        color: 'primary.main'
-                                                    }}
-                                                >
-                                                    ₹{deal.offerPrice}
-                                                </Typography>
-                                                <Typography
-                                                    sx={{
-                                                        fontFamily: `"Montserrat", sans-serif`,
-                                                        fontSize: '0.8rem',
-                                                        color: 'text.secondary',
-                                                        textDecoration: 'line-through',
-                                                        ml: 1
-                                                    }}
-                                                >
-                                                    ₹{deal.product.price}
-                                                </Typography>
-                                            </Box>
-                                            <Typography
-                                                sx={{
-                                                    fontFamily: `"Montserrat", sans-serif`,
-                                                    fontSize: '0.7rem',
-                                                    color: 'success.main',
-                                                    mt: 0.5
-                                                }}
-                                            >
-                                                You save: ₹{deal.product.price - deal.offerPrice}
-                                            </Typography>
-                                        </Box>
-                                        <Box sx={{ textAlign: 'right' }}>
-                                            <Button
-                                                onClick={(e) => handleAddToCart(e, deal.product._id)}
-                                                variant="text"
-                                                color="primary"
-                                                size="small"
-                                                sx={{
-                                                    fontFamily: `"Montserrat", sans-serif`,
-                                                    textTransform: 'none',
-                                                    whiteSpace: 'nowrap',
-                                                    fontSize: isMobile ? '0.8rem' : '0.9rem',
-                                                    px: 2,
-                                                    py: 1
-                                                }}
-                                            >
-                                                Add to cart
-                                            </Button>
-                                        </Box>
-                                    </Box>
-                                </Card>
-                            );
-                        })}
-                    </Box>
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <Typography
+                                        sx={{
+                                            fontSize: isMobile ? '1rem' : '1.5rem',
+                                            fontWeight: 'bold',
+                                            fontFamily: `"Montserrat", sans-serif`,
+                                        }}
+                                    >
+                                        {discountPercentage}%
+                                    </Typography>
+                                    <Typography
+                                        sx={{
+                                            fontSize: isMobile ? '0.7rem' : '0.9rem',
+                                            fontWeight: 'medium',
+                                            fontFamily: `"Montserrat", sans-serif`,
+                                        }}
+                                    >
+                                        off
+                                    </Typography>
+                                </Box>
+                            </Card>
+                        );
+                    })}
                 </Box>
-
-                {/* View More button for mobile */}
-                {isMobile && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                        <Button
-                            onClick={handleViewMore}
-                            variant="contained"
-                            sx={{
-                                fontFamily: `"Montserrat", sans-serif`,
-                                textTransform: 'none',
-                                borderRadius: 1,
-                                width: '50%'
-                            }}
-                        >
-                            View More
-                        </Button>
-                    </Box>
-                )}
             </Container>
+
             {isLoginOpen && <LoginModal show={isLoginOpen} handleClose={closeLoginModal} />}
 
             <Snackbar

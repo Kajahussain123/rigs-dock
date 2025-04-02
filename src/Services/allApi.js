@@ -223,7 +223,7 @@ export const getLatestProducts = async () => {
     const response = await axios.get(`${BASE_URL}/user/product/get`);
     const sortedProducts = response.data.products
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by newest
-      .slice(0, 6); // Get latest 6 products
+      .slice(0, 7); // Get latest 6 products
     return sortedProducts;
   } catch (error) {
     console.error("Failed to fetch latest products", error);

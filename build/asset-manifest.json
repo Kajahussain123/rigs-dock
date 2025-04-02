@@ -1,14 +1,19 @@
 {
   "files": {
-    "main.css": "/static/css/main.49faa5e3.css",
-    "main.js": "/static/js/main.d1029963.js",
+    "main.css": "/static/css/main.e8823b62.css",
+    "main.js": "/static/js/main.35461f69.js",
     "static/media/PlacHolder.png": "/static/media/PlacHolder.cdec2a0166c074290c09.png",
+    "static/media/BannerImg3.jpg": "/static/media/BannerImg3.152affce90b316b122c3.jpg",
+    "static/media/BannerImg4.webp": "/static/media/BannerImg4.f98bd55c1e8674a14d4a.webp",
+    "static/media/BannerImg6.jpg": "/static/media/BannerImg6.8f5f8a49b91c971aa1c9.jpg",
+    "static/media/BannerImg5.jpg": "/static/media/BannerImg5.27e16eaad52b619d135e.jpg",
+    "static/media/BannerImg2.jpg": "/static/media/BannerImg2.c10c26603bd8cddeb1af.jpg",
     "index.html": "/index.html",
-    "main.49faa5e3.css.map": "/static/css/main.49faa5e3.css.map",
-    "main.d1029963.js.map": "/static/js/main.d1029963.js.map"
+    "main.e8823b62.css.map": "/static/css/main.e8823b62.css.map",
+    "main.35461f69.js.map": "/static/js/main.35461f69.js.map"
   },
   "entrypoints": [
-    "static/css/main.49faa5e3.css",
-    "static/js/main.d1029963.js"
+    "static/css/main.e8823b62.css",
+    "static/js/main.35461f69.js"
   ]
 }

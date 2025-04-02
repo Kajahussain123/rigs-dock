@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Navbar, Nav, Form, FormControl, Button, Container, InputGroup } from "react-bootstrap";
+import { Navbar, Nav, Form, FormControl, Button, Dropdown, Container, InputGroup } from "react-bootstrap";
 import { FaSearch, FaUser, FaHeart, FaStore, FaShoppingCart, FaBars, FaHome } from "react-icons/fa";
 import LoginModal from "./LoginModel";
 import { useNavigate } from "react-router-dom";
-import { cartCount, getAllProducts } from "../../Services/allApi";
+import { cartCount, getAllProducts } from "../../Services/allApi"; // Import getAllProducts
 
 const Header = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -76,7 +76,6 @@ const Header = () => {
       navigate(path);
     }
   };
-  //test
   useEffect(() => {
     // Dynamically set padding based on header height
     const header = document.querySelector('.fixed-top');
@@ -88,69 +87,21 @@ const Header = () => {
 
   return (
     <>
-      <Navbar expand="lg"className="py-2 shadow-sm fixed-top" 
+ <Navbar expand="lg"className="py-2 shadow-sm fixed-top" 
         style={{ 
           backgroundColor: "#0A5FBF", 
           zIndex: 1050 
-        }}>
-        <Container>
+        }}>        <Container>
           <Navbar.Brand href="/" className="me-3">
             <img src="https://i.postimg.cc/MKZkQfTh/logo.png" alt="Logo" height="40" />
           </Navbar.Brand>
 
-          {/* Mobile Search Bar - Always Visible */}
-          <div className="d-lg-none w-100 mt-2 mb-2">
-            <Form className="d-flex" style={{ position: "relative" }} onSubmit={handleSearch}>
-              <InputGroup style={{ width: "100%" }}>
-                <FormControl
-                  type="text"
-                  placeholder="Search for products"
-                  className="border-0"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <Button variant="light" className="d-flex align-items-center" type="submit">
-                  <FaSearch />
-                </Button>
-              </InputGroup>
-              {filteredProducts.length > 0 && (
-                <div
-                  className="position-absolute bg-white shadow-lg mt-1"
-                  style={{
-                    width: "100%",
-                    zIndex: 1000,
-                    top: "100%",
-                    left: 0,
-                    border: "1px solid #ddd",
-                    borderRadius: "4px",
-                    maxHeight: "200px",
-                    overflowY: "auto",
-                  }}
-                >
-                  {filteredProducts.map(product => (
-                    <div
-                      key={product._id}
-                      className="p-2 hover-bg-light cursor-pointer"
-                      onClick={() => {
-                        setSearchQuery(product.name);
-                        setFilteredProducts([]);
-                      }}
-                    >
-                      {product.name}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Form>
-          </div>
-
-          {/* <Navbar.Toggle aria-controls="navbar-nav">
-            <FaBars color="white" size={24} />
-          </Navbar.Toggle> */}
+          <Navbar.Toggle aria-controls="navbar-nav">
+            <FaSearch color="white" size={24} />
+          </Navbar.Toggle>
 
           <Navbar.Collapse id="navbar-nav" className="justify-content-between">
-            {/* Desktop Search Bar - Shown on Large Screens */}
-            <Form className="d-none d-lg-flex flex-grow-1 mx-lg-3 mt-2 mt-lg-0" style={{ maxWidth: "600px", position: "relative" }} onSubmit={handleSearch}>
+            <Form className="d-flex flex-grow-1 mx-lg-3 mt-2 mt-lg-0" style={{ maxWidth: "600px", position: "relative" }} onSubmit={handleSearch}>
               <InputGroup style={{ width: "100%" }}>
                 <FormControl
                   type="text"
@@ -167,7 +118,7 @@ const Header = () => {
                 <div
                   className="position-absolute bg-white shadow-lg mt-1"
                   style={{
-                    width: "100%",
+                    width: "100%", // Match the width of the search bar
                     zIndex: 1000,
                     top: "100%",
                     left: 0,
@@ -229,7 +180,6 @@ const Header = () => {
         </Container>
       </Navbar>
 
-      {/* Mobile Bottom Navigation */}
       <div
         className="d-flex d-lg-none position-fixed bottom-0 start-0 w-100 bg-white shadow-lg py-2"
         style={{

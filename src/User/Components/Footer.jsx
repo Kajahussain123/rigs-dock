@@ -9,7 +9,7 @@ useEffect(() => {
 }, []);
 
   return (
-    <Box sx={{ backgroundColor: "#1E1E2D", color: "white", mt: 5  }}>
+    <Box sx={{ backgroundColor: "#01012c", color: "white", mt: 5  }}>
       {/* <Box sx={{ backgroundColor: "#673AB7", p: 2, textAlign: "center" }}>
         <Typography style={{fontFamily: `"Montserrat", sans-serif`,}}>Get connected with us on social networks:</Typography>
         <Box sx={{ mt: 1 }}>
@@ -25,7 +25,7 @@ useEffect(() => {
       <Container sx={{ py: 5 }}>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="h6" sx={{fontFamily: `"Montserrat", sans-serif`, mb: 2, borderBottom: "2px solid #673AB7", display: "inline-block" }}>
+            <Typography variant="h6" sx={{fontFamily: `"Montserrat", sans-serif`, mb: 2, borderBottom: "2px solid #0A5FBF", display: "inline-block" }}>
               RIGSDOCK
             </Typography>
             <Typography style={{fontFamily: `"Montserrat", sans-serif`,}} variant="body2">
@@ -34,7 +34,7 @@ useEffect(() => {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="h6" sx={{fontFamily: `"Montserrat", sans-serif`, mb: 2, borderBottom: "2px solid #673AB7", display: "inline-block" }}>
+            <Typography variant="h6" sx={{fontFamily: `"Montserrat", sans-serif`, mb: 2, borderBottom: "2px solid #0A5FBF", display: "inline-block" }}>
               PRODUCTS
             </Typography>
             <Box>
@@ -45,7 +45,7 @@ useEffect(() => {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="h6" sx={{fontFamily: `"Montserrat", sans-serif`, mb: 2, borderBottom: "2px solid #673AB7", display: "inline-block" }}>
+            <Typography variant="h6" sx={{fontFamily: `"Montserrat", sans-serif`, mb: 2, borderBottom: "2px solid #0A5FBF", display: "inline-block" }}>
               USEFUL LINKS
             </Typography>
             <Box>
@@ -60,7 +60,7 @@ useEffect(() => {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="h6" sx={{fontFamily: `"Montserrat", sans-serif`, mb: 2, borderBottom: "2px solid #673AB7", display: "inline-block" }}>
+            <Typography variant="h6" sx={{fontFamily: `"Montserrat", sans-serif`, mb: 2, borderBottom: "2px solid #0A5FBF", display: "inline-block" }}>
               CONTACT
             </Typography>
             <Box>

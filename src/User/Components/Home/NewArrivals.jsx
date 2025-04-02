@@ -1,25 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Button, Card, CardContent, CardMedia, Grid, Box, Snackbar } from "@mui/material";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { Typography, Button, Card, CardContent, CardMedia, Grid, Box, Snackbar, useMediaQuery } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { addToCart, getLatestProducts } from "../../../Services/allApi";
-import placeholder from "../../../Assets/PlacHolder.png"
+import placeholder from "../../../Assets/PlacHolder.png";
 import LoginModal from "../LoginModel";
 
 const NewArrivals = () => {
   const [products, setProducts] = useState([]);
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [successMessage, setSuccessMessage] = useState("");
   const BASE_URL = "https://rigsdock.com/uploads/";
-  const [successMessage, setSuccessMessage] = useState(""); // State for Snackbar
   const navigate = useNavigate();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-
-  const openLoginModal = () => {
-    setIsLoginOpen(true);
-  };
-
-  const closeLoginModal = () => {
-    setIsLoginOpen(false);
-  };
+  const isMobile = useMediaQuery("(max-width:600px)"); // Check if screen width is less than 600px
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -34,141 +26,112 @@ const NewArrivals = () => {
   }, []);
 
   const handleAddToCart = async (e, productId) => {
-    e.stopPropagation(); // Prevent card click navigation
-    const userId = localStorage.getItem("userId"); // Retrieve userId from local storage
+    e.stopPropagation();
+    const userId = localStorage.getItem("userId");
     if (!userId) {
-      openLoginModal(); // Show the login modal when user is not logged in
+      setIsLoginOpen(true);
       return;
     }
-
     try {
       await addToCart(userId, productId, 1);
       setSuccessMessage("Product added to cart successfully!");
     } catch (error) {
       console.error("Error adding product to cart", error);
-      alert("Failed to add product to cart. Try again.");
     }
   };
 
-  // Countdown Timer (Fixed 24-Hour Sale Timer)
-  useEffect(() => {
-    const saleEndTime = new Date();
-    saleEndTime.setHours(saleEndTime.getHours() + 24); // Sale ends in 24 hours
-
-    const updateTimer = () => {
-      const now = new Date();
-      const difference = saleEndTime - now;
-
-      if (difference <= 0) {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        return;
-      }
-
-      const hours = Math.floor(difference / (1000 * 60 * 60));
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-      setTimeLeft({ hours, minutes, seconds });
-    };
-
-    const timer = setInterval(updateTimer, 1000);
-    return () => clearInterval(timer); // Cleanup
-  }, []);
-
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3, alignItems: "center" }}>
-        <Typography variant="h5" component="h2" sx={{ fontFamily: `"Montserrat", sans-serif`, }}>
-          <Box component="span" sx={{ color: "primary.main", fontFamily: `"Montserrat", sans-serif`, }}>New</Box> Arrivals
-        </Typography>
-        
-      </Box>
+    <Box sx={{ p: 2 }}>
+      <Typography variant="h5" component="h2" sx={{ mb: 3, fontFamily: `"Montserrat", sans-serif` }}>
+        <Box component="span" sx={{ color: "primary.main", fontFamily: `"Montserrat", sans-serif` }}>New </Box> Arrivals
+      </Typography>
 
-      {/* Product List */}
+      {/* Large Cards - First Row */}
       <Grid container spacing={2} justifyContent="center">
-        {products.map((product) => (
-          <Grid item xs={6} sm={6} md={4} lg={2} key={product._id}> {/* Change xs to 6 for two products per row */}
+        {products.slice(0, isMobile ? 1 : 2).map((product) => ( // Show 1 card on mobile, 2 on larger screens
+          <Grid item xs={12} sm={6} key={product._id}>
             <Card
-              sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                p: 2,
-                borderRadius: 2,
-                boxShadow: 3,
-                cursor: "pointer", // Add pointer cursor
-              }}
-              onClick={() => navigate(`/single/${product._id}`)} // Navigate to single product page
+              sx={{ p: 2, borderRadius: 2, boxShadow: 3, cursor: "pointer", height: "100%", position: "relative" }}
+              onClick={() => navigate(`/single/${product._id}`)}
             >
-              <Typography variant="caption" color="text.secondary" sx={{ mb: 1, fontFamily: `"Montserrat", sans-serif`, }}>
-                {product.brand}
-              </Typography>
-              <Typography
-                variant="subtitle2"
+              {/* Offer Tag */}
+              <Box
                 sx={{
-                  height: "40px",
-                  overflow: "hidden",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  mb: 1,
-                  fontFamily: `"Montserrat", sans-serif`,
+                  position: 'absolute',
+                  right: 0,
+                  top: 0,
+                  backgroundColor: '#cc0000',
+                  color: 'white',
+                  padding: '4px 12px',
+                  zIndex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  clipPath: "polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%)",
                 }}
               >
-                {product.name}
-              </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold',fontFamily: `"Montserrat", sans-serif` }}>20%</Typography>
+                <Typography variant="caption">off</Typography>
+              </Box>
+
+              <Typography variant="subtitle1" sx={{fontFamily: `"Montserrat", sans-serif`}}>{product.brand}</Typography>
+              <Typography variant="h6" sx={{ mb: 1,fontFamily: `"Montserrat", sans-serif` }}>{product.name}</Typography>
 
               <CardMedia
                 component="img"
-                height="140"
-                image={product.images?.[0] ? `${BASE_URL}${product.images[0]}` : placeholder} 
-                // image={placeholder}
-                alt={product.name}
-                sx={{ objectFit: "contain", backgroundColor: "#f5f5f5" }}
+                height="200"
+                image={product.images?.[0] ? `${BASE_URL}${product.images[0]}` : placeholder}
+                sx={{ objectFit: "contain" }}
               />
 
-              <Typography sx={{ mb: 1 }}>
-                <Typography
-                  component="span"
-                  sx={{
-                    textDecoration: "line-through",
-                    color: "text.secondary",
-                    mr: 1,
-                    fontFamily: `"Montserrat", sans-serif`,
-                  }}
-                >
-                  ₹ {product.price}
+              {/* Price & Add to Cart Button in Same Row */}
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
+                <Typography sx={{fontFamily: `"Montserrat", sans-serif`}}>
+                  <s>₹ {product.price}</s> <b>₹ {product.finalPrice}</b>
                 </Typography>
-                <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, }} component="span" color="primary" fontWeight="bold">
-                ₹ {product.finalPrice}
-                </Typography>
-              </Typography>
-
-              {/* Add to Cart Button */}
-              <Button
-                onClick={(e) => handleAddToCart(e, product._id)}
-                variant="contained"
-                fullWidth
-                sx={{ mt: "auto", textTransform: "none", fontFamily: `"Montserrat", sans-serif`, }}
-              >
-                Add to cart
-              </Button>
+                <Button variant="text"
+                  color="primary"
+                  size="small"
+                  sx={{fontFamily: `"Montserrat", sans-serif`}}
+                  onClick={(e) => handleAddToCart(e, product._id)}>Add To Cart</Button>
+              </Box>
             </Card>
           </Grid>
         ))}
       </Grid>
 
-      {isLoginOpen && <LoginModal show={isLoginOpen} handleClose={closeLoginModal} />}
+      {/* Small Cards - Second Row */}
+      <Grid container spacing={2} justifyContent="space-between" sx={{ mt: 2 }}>
+        {products.slice(2, 7).map((product) => (
+          <Grid item xs={6} sm={4} md={2.4} key={product._id}>
+            <Card
+              sx={{ p: 2, borderRadius: 2, boxShadow: 2, cursor: "pointer" }}
+              onClick={() => navigate(`/single/${product._id}`)}
+            >
+              <Typography variant="caption" sx={{fontFamily: `"Montserrat", sans-serif`}}>{product.brand}</Typography>
+              <Typography variant="body2" sx={{ mb: 1,fontFamily: `"Montserrat", sans-serif` }}>{product.name}</Typography>
+              <CardMedia
+                component="img"
+                height="100"
+                image={product.images?.[0] ? `${BASE_URL}${product.images[0]}` : placeholder}
+                sx={{ objectFit: "contain" }}
+              />
+              <Typography sx={{ mt: 1,fontFamily: `"Montserrat", sans-serif` }}>
+                <s>₹ {product.price}</s> <b>₹ {product.finalPrice}</b>
+              </Typography>
+              <Button sx={{fontFamily: `"Montserrat", sans-serif`}} variant="contained" fullWidth onClick={(e) => handleAddToCart(e, product._id)}>Add to cart</Button>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
 
-
-      {/* Snackbar for Success Message */}
+      {isLoginOpen && <LoginModal show={isLoginOpen} handleClose={() => setIsLoginOpen(false)} />}
       <Snackbar
         open={!!successMessage}
         autoHideDuration={3000}
         onClose={() => setSuccessMessage("")}
         message={successMessage}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       />
     </Box>
   );
