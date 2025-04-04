@@ -109,7 +109,7 @@ const DealsSlider = () => {
                                 height: '100%',
                                 objectFit: 'cover'
                             }}
-                            image="https://i.postimg.cc/dVbW8VCp/Screenshot-2025-04-02-150221-removebg-preview.png"
+                            image="https://i.postimg.cc/zX1NtW5y/Frame-1000003089.png"
                             alt="Deal of the Day"
                         />
                     </Box>

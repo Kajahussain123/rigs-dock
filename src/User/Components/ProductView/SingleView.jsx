@@ -16,7 +16,8 @@ const SingleProductView = () => {
   const BASE_URL = "https://rigsdock.com/uploads/";
   const [snackbarAction, setSnackbarAction] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
-  const navigate=useNavigate()
+  const navigate = useNavigate()
+
 
   // Set default image when the product changes
   useEffect(() => {
@@ -89,9 +90,29 @@ const SingleProductView = () => {
     setSuccessMessage("");
   };
 
+
+
   if (loading) {
-    return <CircularProgress />;
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0.6)', // optional: dim background
+          zIndex: 9999,
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
   }
+  
 
   if (!product) {
     return <Typography variant="h6" sx={{ fontFamily: `"Montserrat", sans-serif` }}>Product not found</Typography>;
@@ -102,46 +123,46 @@ const SingleProductView = () => {
       <Grid container spacing={4}>
         {/* Product Image */}
         <Grid item xs={12} md={6}>
-      <Card
-        sx={{
-          width: "100%",
-          height: 350,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden",
-        }}
-      >
-        {selectedImage && ( // Render only when selectedImage is set
-          <CardMedia
-            component="img"
-            image={selectedImage}
-            alt="Product Image"
-            sx={{ width: "100%", height: "100%", objectFit: "contain" }}
-          />
-        )}
-      </Card>
-
-      <Stack direction="row" spacing={1} mt={2} sx={{ overflowX: "auto", py: 1 }}>
-        {product?.images?.map((img, index) => (
-          <Box
-            key={index}
-            component="img"
-            src={`${BASE_URL}${img}`}
-            alt={`Thumbnail ${index}`}
-            onClick={() => setSelectedImage(`${BASE_URL}${img}`)}
+          <Card
             sx={{
-              width: 60,
-              height: 60,
-              cursor: "pointer",
-              border: selectedImage.includes(img) ? "3px solid #a89160" : "2px solid black", // Highlight selected
-              objectFit: "cover",
-              flexShrink: 0,
+              width: "100%",
+              height: 350,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
             }}
-          />
-        ))}
-      </Stack>
-    </Grid>
+          >
+            {selectedImage && ( // Render only when selectedImage is set
+              <CardMedia
+                component="img"
+                image={selectedImage}
+                alt="Product Image"
+                sx={{ width: "100%", height: "100%", objectFit: "contain" }}
+              />
+            )}
+          </Card>
+
+          <Stack direction="row" spacing={1} mt={2} sx={{ overflowX: "auto", py: 1 }}>
+            {product?.images?.map((img, index) => (
+              <Box
+                key={index}
+                component="img"
+                src={`${BASE_URL}${img}`}
+                alt={`Thumbnail ${index}`}
+                onClick={() => setSelectedImage(`${BASE_URL}${img}`)}
+                sx={{
+                  width: 60,
+                  height: 60,
+                  cursor: "pointer",
+                  border: selectedImage.includes(img) ? "3px solid #a89160" : "2px solid black", // Highlight selected
+                  objectFit: "cover",
+                  flexShrink: 0,
+                }}
+              />
+            ))}
+          </Stack>
+        </Grid>
 
         {/* Product Details */}
         <Grid item xs={12} md={6}>
@@ -173,7 +194,13 @@ const SingleProductView = () => {
                     <Typography component="span" sx={{ textDecoration: "line-through", color: "gray", ml: 1, fontFamily: `"Montserrat", sans-serif` }}>
                       ₹{product.price}
                     </Typography>
-                    <Chip label="10% Off" color="success" sx={{ ml: 2, fontFamily: `"Montserrat", sans-serif` }} />
+                    {product.price > product.finalPrice && (
+                      <Chip
+                        label={`${Math.round(((product.price - product.finalPrice) / product.price) * 100)}% Off`}
+                        color="success"
+                        sx={{ ml: 2, fontFamily: `"Montserrat", sans-serif` }}
+                      />
+                    )}
                   </Typography>
                 </Box>
 
@@ -221,19 +248,19 @@ const SingleProductView = () => {
           }}
         >
           <Stack direction="row" spacing={2}>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              fullWidth 
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
               onClick={(e) => handleAddToCart(e, product._id)}
               sx={{ fontFamily: `"Montserrat", sans-serif` }}
             >
               Add To Cart
             </Button>
-            <Button 
-              variant="outlined" 
-              color="primary" 
-              fullWidth 
+            <Button
+              variant="outlined"
+              color="primary"
+              fullWidth
               onClick={(e) => handleAddToWishlist(e, product._id)}
               sx={{ fontFamily: `"Montserrat", sans-serif` }}
             >
@@ -245,20 +272,20 @@ const SingleProductView = () => {
         {/* Regular buttons for desktop */}
         <Grid item xs={12} md={6} sx={{ display: { xs: 'none', md: 'block' } }}>
           <Stack direction="row" spacing={2}>
-            <Button 
-              sx={{ fontFamily: `"Montserrat", sans-serif` }} 
-              variant="contained" 
-              color="primary" 
-              fullWidth 
+            <Button
+              sx={{ fontFamily: `"Montserrat", sans-serif` }}
+              variant="contained"
+              color="primary"
+              fullWidth
               onClick={(e) => handleAddToCart(e, product._id)}
             >
               Add To Cart
             </Button>
-            <Button 
-              sx={{ fontFamily: `"Montserrat", sans-serif` }} 
-              variant="outlined" 
-              color="primary" 
-              fullWidth 
+            <Button
+              sx={{ fontFamily: `"Montserrat", sans-serif` }}
+              variant="outlined"
+              color="primary"
+              fullWidth
               onClick={(e) => handleAddToWishlist(e, product._id)}
             >
               Add To Wishlist
@@ -269,17 +296,17 @@ const SingleProductView = () => {
         {isLoginOpen && <LoginModal show={isLoginOpen} handleClose={closeLoginModal} />}
 
         <Snackbar
-        open={!!successMessage}
-        autoHideDuration={3000}
-        onClose={() => setSuccessMessage("")}
-        message={successMessage}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        action={
-          <Button color="white" size="small" onClick={handleViewClick}>
-            View
-          </Button>
-        }
-      />
+          open={!!successMessage}
+          autoHideDuration={3000}
+          onClose={() => setSuccessMessage("")}
+          message={successMessage}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          action={
+            <Button color="white" size="small" onClick={handleViewClick}>
+              View
+            </Button>
+          }
+        />
       </Grid>
     </Container>
   );

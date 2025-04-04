@@ -22,6 +22,7 @@ import { dealOfTheDay, addToCart, addToWishlist, removeWishlist, getWishlist } f
 import LoginModal from "../LoginModel";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import imageDeal from "../../../Assets/DOD.png"
 
 
 const ImageCarousel = ({ images = [] }) => {
@@ -217,7 +218,7 @@ const DealOfTheDayPage = () => {
       {/* Full-width Banner Image */}
       <CardMedia
         component="img"
-        image="https://i.postimg.cc/sDYnS889/360-F-361336183-dpu-Bw-Lkr-B1-Vnf-CXu1-Dr-Hh-D3-Cb-XZXq-UYK.jpg"
+        image={imageDeal}
         alt="Deal of the Day"
         sx={{
           width: "100%",

@@ -58,58 +58,79 @@ const NewArrivals = () => {
 
       {/* Large Cards - First Row */}
       <Grid container spacing={2} justifyContent="center">
-        {products.slice(0, isMobile ? 1 : 2).map((product) => ( // Show 1 card on mobile, 2 on larger screens
-          <Grid item xs={12} sm={6} key={product._id}>
-            <Card
-              sx={{ p: 2, borderRadius: 2, boxShadow: 3, cursor: "pointer", height: "100%", position: "relative" }}
-              onClick={() => navigate(`/single/${product._id}`)}
+  {products.slice(0, isMobile ? 1 : 2).map((product) => {
+    // Calculate discount percentage
+    const discountPercentage = product.price > 0 
+      ? Math.round(((product.price - product.finalPrice) / product.price) * 100)
+      : 0;
+    
+    return (
+      <Grid item xs={12} sm={6} key={product._id}>
+        <Card
+          sx={{ p: 2, borderRadius: 2, boxShadow: 3, cursor: "pointer", height: "100%", position: "relative" }}
+          onClick={() => navigate(`/single/${product._id}`)}
+        >
+          {/* Offer Tag - Only show if there's an actual discount */}
+          {discountPercentage > 0 && (
+            <Box
+              sx={{
+                position: 'absolute',
+                right: 0,
+                top: 0,
+                backgroundColor: '#cc0000',
+                color: 'white',
+                padding: '4px 12px',
+                zIndex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                clipPath: "polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%)",
+              }}
             >
-              {/* Offer Tag */}
-              <Box
-                sx={{
-                  position: 'absolute',
-                  right: 0,
-                  top: 0,
-                  backgroundColor: '#cc0000',
-                  color: 'white',
-                  padding: '4px 12px',
-                  zIndex: 1,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  clipPath: "polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%)",
-                }}
-              >
-                <Typography variant="body2" sx={{ fontWeight: 'bold', fontFamily: `"Montserrat", sans-serif` }}>20%</Typography>
-                <Typography variant="caption">off</Typography>
-              </Box>
+              <Typography variant="body2" sx={{ fontWeight: 'bold', fontFamily: `"Montserrat", sans-serif` }}>
+                {discountPercentage}%
+              </Typography>
+              <Typography variant="caption">off</Typography>
+            </Box>
+          )}
 
-              <Typography variant="subtitle1" sx={{ fontFamily: `"Montserrat", sans-serif` }}>{product.brand}</Typography>
-              <Typography variant="h6" sx={{ mb: 1, fontFamily: `"Montserrat", sans-serif` }}>{product.name}</Typography>
+          <Typography variant="subtitle1" sx={{ fontFamily: `"Montserrat", sans-serif` }}><b>{product.brand}</b></Typography>
+          <Typography variant="h6" sx={{ mb: 1, fontFamily: `"Montserrat", sans-serif` }}>{product.name}</Typography>
 
-              <CardMedia
-                component="img"
-                height="200"
-                image={product.images?.[0] ? `${BASE_URL}${product.images[0]}` : placeholder}
-                sx={{ objectFit: "contain" }}
-              />
+          <CardMedia
+            component="img"
+            height="200"
+            image={product.images?.[0] ? `${BASE_URL}${product.images[0]}` : placeholder}
+            sx={{ objectFit: "contain" }}
+          />
 
-              {/* Price & Add to Cart Button in Same Row */}
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
-                <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
-                  <s>₹ {product.price}</s> <b>₹ {product.finalPrice}</b>
-                </Typography>
-                <Button variant="text"
-                  color="primary"
-                  size="small"
-                  sx={{ fontFamily: `"Montserrat", sans-serif` }}
-                  onClick={(e) => handleAddToCart(e, product._id)}>Add To Cart</Button>
-              </Box>
-            </Card>
-          </Grid>
-        ))}
+          {/* Price & Add to Cart Button in Same Row */}
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
+            <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+              {discountPercentage > 0 && (
+                <s>₹ {product.price}</s>
+              )}
+              <b> ₹ {product.finalPrice}</b>
+            </Typography>
+            <Button 
+              variant="text"
+              color="primary"
+              size="small"
+              sx={{ fontFamily: `"Montserrat", sans-serif` }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddToCart(e, product._id);
+              }}
+            >
+              Add To Cart
+            </Button>
+          </Box>
+        </Card>
       </Grid>
+    );
+  })}
+</Grid>
 
       {/* Small Cards - Second Row */}
       <Grid container spacing={2} justifyContent="space-between" sx={{ mt: 2 }}>
@@ -119,7 +140,7 @@ const NewArrivals = () => {
               sx={{ p: 2, borderRadius: 2, boxShadow: 2, cursor: "pointer" }}
               onClick={() => navigate(`/single/${product._id}`)}
             >
-              <Typography variant="caption" sx={{ fontFamily: `"Montserrat", sans-serif` }}>{product.brand}</Typography>
+              <Typography variant="caption" sx={{ fontFamily: `"Montserrat", sans-serif` }}><b>{product.brand}</b></Typography>
               <Typography variant="body2" sx={{ mb: 1, fontFamily: `"Montserrat", sans-serif` }}>
                 {product.name.length > 15 ? `${product.name.slice(0, 10)}...` : product.name}
               </Typography>
