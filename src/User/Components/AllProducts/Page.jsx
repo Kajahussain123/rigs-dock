@@ -98,6 +98,8 @@ const AllProductsPage = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [wishlist, setWishlist] = useState(new Set());
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [snackbarAction, setSnackbarAction] = useState(null); // 'cart' or 'wishlist'
+
 
   const openLoginModal = () => {
     setIsLoginOpen(true);
@@ -154,6 +156,7 @@ const AllProductsPage = () => {
     try {
       await addToCart(userId, productId, 1);
       setSuccessMessage("Product added to cart successfully!");
+      setSnackbarAction("cart");
     } catch (error) {
       console.error("Error adding product to cart", error);
       alert("Failed to add product to cart. Try again.");
@@ -177,6 +180,7 @@ const AllProductsPage = () => {
           return newWishlist;
         });
         setSuccessMessage("Product removed from wishlist!");
+        setSnackbarAction("wishlist");
       } else {
         await addToWishlist(userId, productId);
         setWishlist((prevWishlist) => {
@@ -185,12 +189,23 @@ const AllProductsPage = () => {
           return newWishlist;
         });
         setSuccessMessage("Product added to wishlist!");
+        setSnackbarAction("wishlist");
+
       }
     } catch (error) {
       console.error("Error updating wishlist", error);
       alert("Failed to update wishlist. Try again.");
     }
   };
+  const handleViewClick = () => {
+    if (snackbarAction === "cart") {
+      navigate("/cart"); // Or use `window.location.href = '/cart'`
+    } else if (snackbarAction === "wishlist") {
+      navigate("/wishlist");
+    }
+    setSuccessMessage("");
+  };
+
 
   const handleFilterChange = (filters) => {
     let filtered = [...products];
@@ -261,7 +276,7 @@ const AllProductsPage = () => {
                 </IconButton>
 
                 {/* Image Carousel */}
-<ImageCarousel images={product?.images?.map(img => `https://rigsdock.com/uploads/${img}`) || []} />
+                <ImageCarousel images={product?.images?.map(img => `https://rigsdock.com/uploads/${img}`) || []} />
 
 
                 <CardContent>
@@ -297,7 +312,7 @@ const AllProductsPage = () => {
 
                       {/* Final Price (Highlighted) */}
                       <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, }} variant="h6" color="error" fontWeight="bold">
-                      ₹ {product.finalPrice || product.price}
+                        ₹ {product.finalPrice || product.price}
                       </Typography>
                     </Stack>
 
@@ -327,7 +342,13 @@ const AllProductsPage = () => {
         onClose={() => setSuccessMessage("")}
         message={successMessage}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        action={
+          <Button color="white" size="small" onClick={handleViewClick}>
+            View
+          </Button>
+        }
       />
+
     </Box>
   );
 };

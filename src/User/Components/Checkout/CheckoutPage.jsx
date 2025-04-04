@@ -380,9 +380,7 @@ const CheckoutPage = () => {
 
               {/* Payment Options */}
               <Box mb={3}>
-                <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, }} variant="body1" gutterBottom fontWeight="bold">
-                  Payment Options
-                </Typography>
+               
                 <FormControl component="fieldset">
                   <Box mb={3}>
                     <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="body1" gutterBottom fontWeight="bold">

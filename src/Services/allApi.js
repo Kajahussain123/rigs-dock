@@ -91,13 +91,27 @@ export const viewSubCategories = async (mainCatId, catId) => {
 };
 
 // view products
+// export const viewProducts = async (mainCatId, catId, subCatId) => {
+//   try {
+//     const response = await axios.get(`${BASE_URL}/user/product/get/${mainCatId}/${catId}/${subCatId}`, {
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.error('Failed to register', error);
+//     throw error;
+//   }
+// };
 export const viewProducts = async (mainCatId, catId, subCatId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/user/product/get/${mainCatId}/${catId}/${subCatId}`, {
-    });
+    // Convert "null" string to actual null (if coming from URL)
+    const finalSubCatId = subCatId === "null" ? null : subCatId;
+    
+    const response = await axios.get(
+      `${BASE_URL}/user/product/get/${mainCatId}/${catId}/${finalSubCatId || 'null'}`
+    );
     return response.data;
   } catch (error) {
-    console.error('Failed to register', error);
+    console.error('Failed to fetch products', error); // Changed error message
     throw error;
   }
 };

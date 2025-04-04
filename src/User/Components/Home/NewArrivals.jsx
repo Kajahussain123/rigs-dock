@@ -12,6 +12,7 @@ const NewArrivals = () => {
   const navigate = useNavigate();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width:600px)"); // Check if screen width is less than 600px
+  const [snackbarAction, setSnackbarAction] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -35,9 +36,18 @@ const NewArrivals = () => {
     try {
       await addToCart(userId, productId, 1);
       setSuccessMessage("Product added to cart successfully!");
+      setSnackbarAction("cart");
     } catch (error) {
       console.error("Error adding product to cart", error);
     }
+  };
+  const handleViewClick = () => {
+    if (snackbarAction === "cart") {
+      navigate("/cart"); // Or use `window.location.href = '/cart'`
+    } else if (snackbarAction === "wishlist") {
+      navigate("/wishlist");
+    }
+    setSuccessMessage("");
   };
 
   return (
@@ -71,12 +81,12 @@ const NewArrivals = () => {
                   clipPath: "polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%)",
                 }}
               >
-                <Typography variant="body2" sx={{ fontWeight: 'bold',fontFamily: `"Montserrat", sans-serif` }}>20%</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', fontFamily: `"Montserrat", sans-serif` }}>20%</Typography>
                 <Typography variant="caption">off</Typography>
               </Box>
 
-              <Typography variant="subtitle1" sx={{fontFamily: `"Montserrat", sans-serif`}}>{product.brand}</Typography>
-              <Typography variant="h6" sx={{ mb: 1,fontFamily: `"Montserrat", sans-serif` }}>{product.name}</Typography>
+              <Typography variant="subtitle1" sx={{ fontFamily: `"Montserrat", sans-serif` }}>{product.brand}</Typography>
+              <Typography variant="h6" sx={{ mb: 1, fontFamily: `"Montserrat", sans-serif` }}>{product.name}</Typography>
 
               <CardMedia
                 component="img"
@@ -87,13 +97,13 @@ const NewArrivals = () => {
 
               {/* Price & Add to Cart Button in Same Row */}
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
-                <Typography sx={{fontFamily: `"Montserrat", sans-serif`}}>
+                <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
                   <s>₹ {product.price}</s> <b>₹ {product.finalPrice}</b>
                 </Typography>
                 <Button variant="text"
                   color="primary"
                   size="small"
-                  sx={{fontFamily: `"Montserrat", sans-serif`}}
+                  sx={{ fontFamily: `"Montserrat", sans-serif` }}
                   onClick={(e) => handleAddToCart(e, product._id)}>Add To Cart</Button>
               </Box>
             </Card>
@@ -109,18 +119,21 @@ const NewArrivals = () => {
               sx={{ p: 2, borderRadius: 2, boxShadow: 2, cursor: "pointer" }}
               onClick={() => navigate(`/single/${product._id}`)}
             >
-              <Typography variant="caption" sx={{fontFamily: `"Montserrat", sans-serif`}}>{product.brand}</Typography>
-              <Typography variant="body2" sx={{ mb: 1,fontFamily: `"Montserrat", sans-serif` }}>{product.name}</Typography>
+              <Typography variant="caption" sx={{ fontFamily: `"Montserrat", sans-serif` }}>{product.brand}</Typography>
+              <Typography variant="body2" sx={{ mb: 1, fontFamily: `"Montserrat", sans-serif` }}>
+                {product.name.length > 15 ? `${product.name.slice(0, 10)}...` : product.name}
+              </Typography>
+
               <CardMedia
                 component="img"
                 height="100"
                 image={product.images?.[0] ? `${BASE_URL}${product.images[0]}` : placeholder}
                 sx={{ objectFit: "contain" }}
               />
-              <Typography sx={{ mt: 1,fontFamily: `"Montserrat", sans-serif` }}>
+              <Typography sx={{ mt: 1, fontFamily: `"Montserrat", sans-serif` }}>
                 <s>₹ {product.price}</s> <b>₹ {product.finalPrice}</b>
               </Typography>
-              <Button sx={{fontFamily: `"Montserrat", sans-serif`}} variant="contained" fullWidth onClick={(e) => handleAddToCart(e, product._id)}>Add to cart</Button>
+              <Button sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="contained" fullWidth onClick={(e) => handleAddToCart(e, product._id)}>Add to cart</Button>
             </Card>
           </Grid>
         ))}
@@ -132,6 +145,12 @@ const NewArrivals = () => {
         autoHideDuration={3000}
         onClose={() => setSuccessMessage("")}
         message={successMessage}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        action={
+          <Button color="white" size="small" onClick={handleViewClick}>
+            View
+          </Button>
+        }
       />
     </Box>
   );

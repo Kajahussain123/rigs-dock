@@ -16,6 +16,7 @@ const SimilarProducts = () => {
   const [successMessage, setSuccessMessage] = useState(""); // State for Snackbar
   const [wishlist, setWishlist] = useState(new Set());
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [snackbarAction, setSnackbarAction] = useState(null);
 
   const openLoginModal = () => {
     setIsLoginOpen(true);
@@ -72,6 +73,7 @@ const SimilarProducts = () => {
     try {
       await addToCart(userId, productId, 1);
       setSuccessMessage("Product added to cart successfully!");
+      setSnackbarAction("cart");
     } catch (error) {
       console.error("Error adding product to cart", error);
       alert("Failed to add product to cart. Try again.");
@@ -97,6 +99,7 @@ const SimilarProducts = () => {
           return newWishlist;
         });
         setSuccessMessage("Product removed from wishlist!");
+        setSnackbarAction("wishlist");
       } else {
         // If the product is not in the wishlist, add it
         await addToWishlist(userId, productId);
@@ -106,11 +109,20 @@ const SimilarProducts = () => {
           return newWishlist;
         });
         setSuccessMessage("Product added to wishlist!");
+        setSnackbarAction("wishlist");
       }
     } catch (error) {
       console.error("Error updating wishlist", error);
       alert("Failed to update wishlist. Try again.");
     }
+  };
+  const handleViewClick = () => {
+    if (snackbarAction === "cart") {
+      navigate("/cart"); // Or use `window.location.href = '/cart'`
+    } else if (snackbarAction === "wishlist") {
+      navigate("/wishlist");
+    }
+    setSuccessMessage("");
   };
 
   return (
@@ -245,6 +257,11 @@ const SimilarProducts = () => {
         onClose={() => setSuccessMessage("")}
         message={successMessage}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        action={
+          <Button color="white" size="small" onClick={handleViewClick}>
+            View
+          </Button>
+        }
       />
     </Container>
   );

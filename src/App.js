@@ -31,7 +31,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home></Home>}></Route>
         <Route path='/single/:productId' element={<ProductView></ProductView>}></Route>
-        <Route path='/products/:mainCatId/:catId/:subCatId' element={<Products></Products>}></Route>
+        <Route path='/products/:mainCatId/:catId/:subCatId?' element={<Products />} />
         <Route path="/profile/*" element={<Profile />} /> 
         <Route path='/cart' element={<Cart></Cart>}></Route>
         <Route path='/myorders' element={<MyOrders></MyOrders>}></Route>

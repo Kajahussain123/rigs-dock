@@ -121,94 +121,94 @@ const DealOfTheDay = () => {
           {/* First row - Full width featured product */}
           {products.length > 0 && (
             <Grid item xs={12}>
-            <SpecialOfferCard onClick={() => navigate(`/single/${products[0].product._id}`)}>
-              {/* Discount Ribbon - positioned absolutely */}
-              <DiscountTagRibbon>
-                <Typography variant="h4" sx={{ fontWeight: "bold", mb: 0, fontSize: { xs: "1.25rem", sm: "1.5rem" } }}>
-                  {calculateDiscount(products[0].product.price, products[0].offerPrice)}%
-                </Typography>
-                <Typography variant="body1" sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>off</Typography>
-              </DiscountTagRibbon>
-          
-              {/* Main content container */}
-              <Box sx={{
-                display: 'flex',
-                flexDirection: { xs: 'column', sm: 'row' },
-                alignItems: 'center',
-                width: '100%',
-                height: '100%',
-                position: 'relative' // Needed for absolute positioning of ribbon
-              }}>
-                {/* Text content */}
+              <SpecialOfferCard onClick={() => navigate(`/single/${products[0].product._id}`)}>
+                {/* Discount Ribbon - positioned absolutely */}
+                <DiscountTagRibbon>
+                  <Typography variant="h4" sx={{ fontWeight: "bold", mb: 0, fontSize: { xs: "1.25rem", sm: "1.5rem" } }}>
+                    {calculateDiscount(products[0].product.price, products[0].offerPrice)}%
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>off</Typography>
+                </DiscountTagRibbon>
+
+                {/* Main content container */}
                 <Box sx={{
-                  flex: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: { xs: 'center', sm: 'flex-start' },
-                  textAlign: { xs: 'center', sm: 'left' },
-                  px: { xs: 2, sm: 4, md: 6, lg: 8 },
-                  py: { xs: 3, sm: 3 },
+                  display: 'flex',
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  alignItems: 'center',
                   width: '100%',
-                  pt: { xs: 4, sm: 3 } // Add padding top to avoid ribbon overlap
+                  height: '100%',
+                  position: 'relative' // Needed for absolute positioning of ribbon
                 }}>
-                  <Typography variant="h4" sx={{
-                    fontFamily: `"Montserrat", sans-serif`,
-                    mb: 1,
-                    fontSize: { xs: "1.50rem", sm: "1.5rem", md: "1.75rem", lg: "2rem" }
-                  }}>
-                    Special Offer
-                  </Typography>
-          
-                  <Typography variant="h5" sx={{
-                    fontFamily: `"Montserrat", sans-serif`,
-                    fontWeight: "bold",
-                    mb: 1,
-                    fontSize: { xs: "1.6rem", sm: "1.25rem", md: "1.4rem", lg: "1.5rem" }
-                  }}>
-                    {products[0].product.name}
-                  </Typography>
-          
+                  {/* Text content */}
                   <Box sx={{
+                    flex: 2,
                     display: "flex",
                     flexDirection: "column",
+                    justifyContent: "center",
                     alignItems: { xs: 'center', sm: 'flex-start' },
-                    mb: 2
+                    textAlign: { xs: 'center', sm: 'left' },
+                    px: { xs: 2, sm: 4, md: 6, lg: 8 },
+                    py: { xs: 3, sm: 3 },
+                    width: '100%',
+                    pt: { xs: 4, sm: 3 } // Add padding top to avoid ribbon overlap
                   }}>
-                    <Typography sx={{
+                    <Typography variant="h4" sx={{
                       fontFamily: `"Montserrat", sans-serif`,
-                      fontSize: { xs: "1rem", sm: "1rem" }
+                      mb: 1,
+                      fontSize: { xs: "1.50rem", sm: "1.5rem", md: "1.75rem", lg: "2rem" }
                     }}>
-                      <s> ₹{products[0].product.price} </s> <b> ₹{products[0].offerPrice}</b>
+                      Special Offer
                     </Typography>
+
+                    <Typography variant="h5" sx={{
+                      fontFamily: `"Montserrat", sans-serif`,
+                      fontWeight: "bold",
+                      mb: 1,
+                      fontSize: { xs: "1.6rem", sm: "1.25rem", md: "1.4rem", lg: "1.5rem" }
+                    }}>
+                      {products[0].product.name}
+                    </Typography>
+
+                    <Box sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: { xs: 'center', sm: 'flex-start' },
+                      mb: 2
+                    }}>
+                      <Typography sx={{
+                        fontFamily: `"Montserrat", sans-serif`,
+                        fontSize: { xs: "1rem", sm: "1rem" }
+                      }}>
+                        <s> ₹{products[0].product.price} </s> <b> ₹{products[0].offerPrice}</b>
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  {/* Image container */}
+                  <Box sx={{
+                    flex: 1,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: { xs: '100%', sm: 'auto' },
+                    p: { xs: 2, sm: 3 },
+                    order: { xs: 2, sm: 1 }
+                  }}>
+                    <img
+                      src={`${BASE_URL}${products[0].product.images[0]}`}
+                      onError={(e) => { e.target.src = placeholder; }}
+                      alt={products[0].product.name}
+                      style={{
+                        maxWidth: "90%",
+                        height: 'auto',
+                        maxHeight: { xs: "150px", sm: "180px", md: "200px", lg: "220px" },
+                        objectFit: "contain"
+                      }}
+                    />
                   </Box>
                 </Box>
-          
-                {/* Image container */}
-                <Box sx={{
-                  flex: 1,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: { xs: '100%', sm: 'auto' },
-                  p: { xs: 2, sm: 3 },
-                  order: { xs: 2, sm: 1 }
-                }}>
-                  <img
-                    src={`${BASE_URL}${products[0].product.images[0]}`}
-                    onError={(e) => { e.target.src = placeholder; }}
-                    alt={products[0].product.name}
-                    style={{
-                      maxWidth: "90%",
-                      height: 'auto',
-                      maxHeight: { xs: "150px", sm: "180px", md: "200px", lg: "220px" },
-                      objectFit: "contain"
-                    }}
-                  />
-                </Box>
-              </Box>
-            </SpecialOfferCard>
-          </Grid>
+              </SpecialOfferCard>
+            </Grid>
           )}
 
           {/* Second row - Three products */}

@@ -33,7 +33,6 @@ const CartPage = () => {
               quantity: item.quantity,
               totalPrice: item.quantity * (item.product.finalPrice || item.product.price),
               brand: item.product.brand,
-
               deliveryFee: item.product.deliveryfee || 0, // Get individual delivery fee
               image: item.product.images?.[0] ? `${BASE_URL}${item.product.images[0]}` : "https://via.placeholder.com/120",
             })),
@@ -141,15 +140,16 @@ const CartPage = () => {
 
             // Use existing product details if available
             const product = existingItem
-              ? {
-                name: existingItem.name,
-                brand: existingItem.brand,
-                images: existingItem.images,
-                deliveryfee: existingItem.deliveryFee,
-                finalPrice: existingItem.price,
-                price: existingItem.price,
-              }
-              : {};
+  ? {
+      name: existingItem.name,
+      brand: existingItem.brand,
+      image: existingItem.image, // <-- use 'image' not 'images'
+      deliveryfee: existingItem.deliveryFee,
+      finalPrice: existingItem.price,
+      price: existingItem.price,
+    }
+  : {};
+
 
             const price = product.finalPrice || product.price || 0; // Fallback to 0 if price is missing
             const totalPrice = item.quantity * price;
@@ -162,7 +162,8 @@ const CartPage = () => {
               totalPrice: totalPrice,
               brand: product.brand || "Unknown Brand", // Fallback for missing brand
               deliveryFee: product.deliveryfee || 0,
-              image: product.images?.[0] ? `${BASE_URL}${product.images[0]}` : placeholder,
+              image: product.image ? product.image : placeholder,
+
             };
           });
 
@@ -197,12 +198,13 @@ const CartPage = () => {
           {cart.items.length > 0 ? (
             cart.items.map((item) => (
               <Box
-                key={item.id} // Ensure the key is unique
+                key={item.id}
                 sx={{
                   display: "flex",
-                  alignItems: "center",
+                  flexDirection: { xs: "column", sm: "row" },
+                  alignItems: { xs: "flex-start", sm: "center" },
                   mb: 2,
-                  p: 2,
+                  p: { xs: 1, sm: 2 },
                   borderRadius: 2,
                   boxShadow: 2,
                   bgcolor: "white",
@@ -210,69 +212,154 @@ const CartPage = () => {
               >
                 <CardMedia
                   component="img"
-                  sx={{ width: 120, height: 120, objectFit: "contain", borderRadius: 1, mr: 2 }}
-                  image={item.image} 
-                                 alt={item.name}
+                  sx={{
+                    width: { xs: "100%", sm: 120 },
+                    height: { xs: 160, sm: 120 },
+                    objectFit: "contain",
+                    borderRadius: 1,
+                    mr: { xs: 0, sm: 2 },
+                    mb: { xs: 1, sm: 0 }
+                  }}
+                  image={item.image}
+                  alt={item.name}
                 />
-                <Box sx={{ flexGrow: 1  }}>
-                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="subtitle1" fontWeight="bold" gutterBottom>
+                <Box sx={{
+                  flexGrow: 1,
+                  width: { xs: "100%", sm: "auto" }
+                }}>
+                  <Typography
+                    sx={{
+                      fontFamily: `"Montserrat", sans-serif`,
+                      fontSize: { xs: "0.9rem", sm: "1rem" }
+                    }}
+                    variant="subtitle1"
+                    fontWeight="bold"
+                    gutterBottom
+                  >
                     {item.name}
                   </Typography>
-                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="body2" color="text.secondary">
+                  <Typography
+                    sx={{
+                      fontFamily: `"Montserrat", sans-serif`,
+                      fontSize: { xs: "0.8rem", sm: "0.875rem" }
+                    }}
+                    variant="body2"
+                    color="text.secondary"
+                  >
                     {item.brand}
                   </Typography>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="h6" component="span" fontWeight="bold">
-                      ₹{item.price?.toLocaleString() || 0} {/* Fallback to 0 if price is missing */}
-                    </Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
-                      <Button
-                        variant="outlined"
-                        onClick={() => handleQuantityChange(item.id, "decrease")}
-                        disabled={item.quantity <= 1}
-                        sx={{ minWidth: 30, p: 0.5 }}
+                  <Box sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                    mt: 1
+                  }}>
+                    <Box sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: 1
+                    }}>
+                      <Typography
+                        sx={{
+                          fontFamily: `"Montserrat", sans-serif`,
+                          fontSize: { xs: "1rem", sm: "1.25rem" }
+                        }}
+                        component="span"
+                        fontWeight="bold"
                       >
-                        -
-                      </Button>
-                      <Typography sx={{ mx: 2 }}>{item.quantity}</Typography>
-                      <Button
-                        variant="outlined"
-                        onClick={() => handleQuantityChange(item.id, "increase")}
-                        sx={{ minWidth: 30, p: 0.5 }}
+                        ₹{item.price?.toLocaleString() || 0}
+                      </Typography>
+                      <Box sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        ml: { xs: 0, sm: 2 }
+                      }}>
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleQuantityChange(item.id, "decrease")}
+                          disabled={item.quantity <= 1}
+                          sx={{ minWidth: 30, p: 0.5 }}
+                        >
+                          -
+                        </Button>
+                        <Typography sx={{ mx: 1 }}>{item.quantity}</Typography>
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleQuantityChange(item.id, "increase")}
+                          sx={{ minWidth: 30, p: 0.5 }}
+                        >
+                          +
+                        </Button>
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontFamily: `"Montserrat", sans-serif`,
+                          color: "#388e3c",
+                          fontWeight: "bold",
+                          ml: { xs: 0, sm: 2 },
+                          fontSize: { xs: "0.9rem", sm: "0.875rem" }
+                        }}
                       >
-                        +
-                      </Button>
+                        ₹{item.totalPrice?.toLocaleString() || 0}
+                      </Typography>
                     </Box>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontFamily: `"Montserrat", sans-serif`, color: "#388e3c", fontWeight: "bold", ml: 2 }}
+                    <IconButton
+                      color="error"
+                      onClick={() => handleRemoveClick(item)}
+                      sx={{
+                        ml: { xs: 1, sm: 0 },
+                        alignSelf: "center"
+                      }}
                     >
-                      ₹{item.totalPrice?.toLocaleString() || 0} {/* Fallback to 0 if totalPrice is missing */}
-                    </Typography>
+                      <DeleteIcon />
+                    </IconButton>
                   </Box>
                 </Box>
-                <IconButton color="error" onClick={() => handleRemoveClick(item)}>
-                  <DeleteIcon />
-                </IconButton>
               </Box>
             ))
           ) : (
             <Box sx={{ textAlign: "center", mt: 5 }}>
               <CardMedia
                 component="img"
-                sx={{ width: 200, margin: "auto" }}
+                sx={{
+                  width: { xs: 150, sm: 200 },
+                  margin: "auto"
+                }}
                 image="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
                 alt="Empty Cart"
               />
-              <Typography variant="h6" sx={{ fontFamily: `"Montserrat", sans-serif`, mt: 2 }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontFamily: `"Montserrat", sans-serif`,
+                  mt: 2,
+                  fontSize: { xs: "1.1rem", sm: "1.25rem" }
+                }}
+              >
                 Your cart is empty.
               </Typography>
-              <Typography variant="body2" sx={{ fontFamily: `"Montserrat", sans-serif`, color: "text.secondary", mb: 2 }}>
-                Looks like you haven’t added anything yet.
+              <Typography
+                variant="body2"
+                sx={{
+                  fontFamily: `"Montserrat", sans-serif`,
+                  color: "text.secondary",
+                  mb: 2,
+                  fontSize: { xs: "0.8rem", sm: "0.875rem" }
+                }}
+              >
+                Looks like you haven't added anything yet.
               </Typography>
               <Button
                 variant="contained"
-                sx={{ fontFamily: `"Montserrat", sans-serif`, textTransform: "none", bgcolor: "#0A5FBF" }}
+                sx={{
+                  fontFamily: `"Montserrat", sans-serif`,
+                  textTransform: "none",
+                  bgcolor: "#0A5FBF",
+                  fontSize: { xs: "0.8rem", sm: "0.875rem" }
+                }}
                 onClick={() => navigate("/")}
               >
                 Start Shopping

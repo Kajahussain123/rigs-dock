@@ -59,7 +59,7 @@ function Home() {
       <div><CategoryNav /></div>
       <div><DealsSlider /></div>
       <div><NewArrivals /></div>
-      <div><BannerSection2 /></div>
+      {/* <div><BannerSection2 /></div> */}
       <div><OurProducts /></div>
       <div><DealOfTheDay /></div>
       <Footer />

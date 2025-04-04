@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Container, Grid, Typography, Button, Box, Card, CardMedia, Chip, Stack, CircularProgress, Snackbar } from "@mui/material";
 import { FavoriteBorder } from "@mui/icons-material";
 import { addToCart, addToWishlist, viewProductsById } from "../../../Services/allApi";
@@ -14,8 +14,9 @@ const SingleProductView = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const BASE_URL = "https://rigsdock.com/uploads/";
-
+  const [snackbarAction, setSnackbarAction] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
+  const navigate=useNavigate()
 
   // Set default image when the product changes
   useEffect(() => {
@@ -56,6 +57,7 @@ const SingleProductView = () => {
     try {
       await addToCart(userId, productId, 1);
       setSuccessMessage("Product added to cart successfully!");
+      setSnackbarAction("cart");
     } catch (error) {
       console.error("Error adding product to cart", error);
       alert("Failed to add product to cart. Try again.");
@@ -72,10 +74,19 @@ const SingleProductView = () => {
     try {
       await addToWishlist(userId, productId);
       setSuccessMessage("Product added to wishlist successfully!");
+      setSnackbarAction("wishlist");
     } catch (error) {
       console.error("Error adding product to wishlist", error);
       alert("Failed to add product to wishlist. Try again.");
     }
+  };
+  const handleViewClick = () => {
+    if (snackbarAction === "cart") {
+      navigate("/cart"); // Or use `window.location.href = '/cart'`
+    } else if (snackbarAction === "wishlist") {
+      navigate("/wishlist");
+    }
+    setSuccessMessage("");
   };
 
   if (loading) {
@@ -258,12 +269,17 @@ const SingleProductView = () => {
         {isLoginOpen && <LoginModal show={isLoginOpen} handleClose={closeLoginModal} />}
 
         <Snackbar
-          open={!!successMessage}
-          autoHideDuration={3000}
-          onClose={() => setSuccessMessage("")}
-          message={successMessage}
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        />
+        open={!!successMessage}
+        autoHideDuration={3000}
+        onClose={() => setSuccessMessage("")}
+        message={successMessage}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        action={
+          <Button color="white" size="small" onClick={handleViewClick}>
+            View
+          </Button>
+        }
+      />
       </Grid>
     </Container>
   );

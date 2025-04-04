@@ -24,7 +24,8 @@ const ManageAddresses = () => {
   const [addresses, setAddresses] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [newAddress, setNewAddress] = useState({
-    fullName: "",
+    firstName: "",
+    lastName:"",
     phone: "",
     addressLine1: "",
     addressLine2: "",
@@ -70,7 +71,7 @@ const ManageAddresses = () => {
       
       // Reset form fields
       setNewAddress({
-        fullName: "", phone: "", addressLine1: "", addressLine2: "", 
+        firstName:"",lastName: "", phone: "", addressLine1: "", addressLine2: "", 
         city: "", state: "", country: "", zipCode: "", addressType: "Home"
       });
   
@@ -109,10 +110,13 @@ const ManageAddresses = () => {
       {showForm && (
         <Paper elevation={1} sx={{ p: 3, mb: 2 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField  label="Full Name" name="fullName" value={newAddress.fullName} onChange={handleChange} fullWidth required />
+            <Grid item xs={12} sm={4}>
+              <TextField  label="Firts Name" name="firstName" value={newAddress.firstName} onChange={handleChange} fullWidth required />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
+              <TextField label="Last Name" name="lastName" value={newAddress.lastName} onChange={handleChange} fullWidth required />
+            </Grid>
+            <Grid item xs={12} sm={4}>
               <TextField label="Phone Number" name="phone" value={newAddress.phone} onChange={handleChange} fullWidth required />
             </Grid>
             <Grid item xs={12}>
@@ -152,7 +156,7 @@ const ManageAddresses = () => {
         <Paper key={index} elevation={1} sx={{ p: 2, mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Box>
             <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="body1" fontWeight="bold" mt={1}>
-              {address.fullName} &nbsp; {address.phone}
+              {address.firstName} {address.lastName} &nbsp; {address.phone}
             </Typography>
             <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="body2">
               {address.addressLine1}, {address.addressLine2}

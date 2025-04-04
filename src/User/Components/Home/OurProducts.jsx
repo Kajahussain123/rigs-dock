@@ -12,10 +12,10 @@ const ProductCard = ({ product, handleAddToCart }) => {
 
   return (
     <Card
-      sx={{ 
-        padding: 2, 
-        textAlign: "center", 
-        boxShadow: 3, 
+      sx={{
+        padding: 2,
+        textAlign: "center",
+        boxShadow: 3,
         cursor: "pointer",
         height: "100%",
         display: "flex",
@@ -27,8 +27,8 @@ const ProductCard = ({ product, handleAddToCart }) => {
       <img
         src={`${BASE_URL}/${product.images[0]}`}
         alt={product.name}
-        style={{ 
-          width: "100%", 
+        style={{
+          width: "100%",
           height: "120px",
           objectFit: "contain",
           margin: "0 auto"
@@ -78,6 +78,7 @@ const OurProducts = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [snackbarAction, setSnackbarAction] = useState(null);
 
   const openLoginModal = () => {
     setIsLoginOpen(true);
@@ -120,6 +121,7 @@ const OurProducts = () => {
     try {
       await addToCart(userId, productId, 1);
       setSuccessMessage("Product added to cart successfully!");
+      setSnackbarAction("cart");
       setTimeout(() => setSuccessMessage(""), 3000);
     } catch (error) {
       console.error("Error adding product to cart", error);
@@ -129,6 +131,14 @@ const OurProducts = () => {
 
   const handleViewMore = () => {
     navigate("/allproducts");
+  };
+  const handleViewClick = () => {
+    if (snackbarAction === "cart") {
+      navigate("/cart"); // Or use `window.location.href = '/cart'`
+    } else if (snackbarAction === "wishlist") {
+      navigate("/wishlist");
+    }
+    setSuccessMessage("");
   };
 
   return (
@@ -140,11 +150,11 @@ const OurProducts = () => {
         <Typography
           variant="body1"
           color="primary"
-          sx={{ 
-            fontFamily: `"Montserrat", sans-serif`, 
-            fontWeight: "bold", 
-            cursor: "pointer", 
-            "&:hover": { textDecoration: "underline" } 
+          sx={{
+            fontFamily: `"Montserrat", sans-serif`,
+            fontWeight: "bold",
+            cursor: "pointer",
+            "&:hover": { textDecoration: "underline" }
           }}
           onClick={handleViewMore}
         >
@@ -180,6 +190,11 @@ const OurProducts = () => {
         onClose={() => setSuccessMessage("")}
         message={successMessage}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        action={
+          <Button color="white" size="small" onClick={handleViewClick}>
+            View
+          </Button>
+        }
       />
     </Container>
   );
