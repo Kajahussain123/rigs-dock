@@ -45,48 +45,48 @@ const ImageCarousel = ({ images = [] }) => {
 
     return (
         <Box sx={{ position: "relative" }}>
-      <CardMedia
-        component="img"
-        height="200"
-        image={formattedImages[currentImage]} // Ensure correct image is displayed
-        alt="Product Image"
-        sx={{ objectFit: "cover" }}
-      />
-      {formattedImages.length > 1 && (
-        <>
-          <Button
-            sx={{
-              position: "absolute",
-              left: 0,
-              top: "50%",
-              transform: "translateY(-50%)",
-              minWidth: "36px",
-              p: 0,
-              color: "white",
-              "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
-            }}
-            onClick={prevImage}
-          >
-            <ChevronLeftIcon />
-          </Button>
-          <Button
-            sx={{
-              position: "absolute",
-              right: 0,
-              top: "50%",
-              transform: "translateY(-50%)",
-              minWidth: "36px",
-              p: 0,
-              color: "white",
-              "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
-            }}
-            onClick={nextImage}
-          >
-            <ChevronRightIcon />
-          </Button>
-        </>
-      )}
-    </Box>
+            <CardMedia
+                component="img"
+                height="200"
+                image={formattedImages[currentImage]} // Ensure correct image is displayed
+                alt="Product Image"
+                sx={{ objectFit: "cover" }}
+            />
+            {formattedImages.length > 1 && (
+                <>
+                    <Button
+                        sx={{
+                            position: "absolute",
+                            left: 0,
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            minWidth: "36px",
+                            p: 0,
+                            color: "white",
+                            "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
+                        }}
+                        onClick={prevImage}
+                    >
+                        <ChevronLeftIcon />
+                    </Button>
+                    <Button
+                        sx={{
+                            position: "absolute",
+                            right: 0,
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            minWidth: "36px",
+                            p: 0,
+                            color: "white",
+                            "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
+                        }}
+                        onClick={nextImage}
+                    >
+                        <ChevronRightIcon />
+                    </Button>
+                </>
+            )}
+        </Box>
     );
 };
 
@@ -221,7 +221,23 @@ const SearchResultsPage = () => {
 
 
     if (loading) {
-        return <CircularProgress />;
+        return (
+            <div
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 9999,
+                }}
+            >
+                <CircularProgress />
+            </div>
+        );
     }
 
     if (!Array.isArray(products)) {
@@ -267,19 +283,39 @@ const SearchResultsPage = () => {
                                     {wishlist.has(product._id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                                 </IconButton>
 
-                              
+
                                 {/* Image Carousel */}
                                 <ImageCarousel images={product?.images?.map(img => `https://rigsdock.com/uploads/${img}`) || []} />
                                 <CardContent>
                                     <Stack spacing={1}>
                                         {/* Product Name (Truncated to 10 characters) */}
-                                        <Typography variant="h6" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                                        <Typography
+                                            variant="h6"
+                                            sx={{
+                                                fontFamily: `"Montserrat", sans-serif`,
+                                                fontSize: {
+                                                    xs: '1rem',  // smaller font on mobile
+                                                    sm: '1.25rem', // default for small screens and above
+                                                },
+                                            }}
+                                        >
                                             {product.name.length > 10 ? `${product.name.substring(0, 10)}...` : product.name}
                                         </Typography>
 
                                         {/* Brand Name */}
-                                        <Typography variant="body2" color="text.secondary" sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold" }}>
-                                            Brand: {product.brand || "Unknown"}
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                            sx={{
+                                                fontFamily: `"Montserrat", sans-serif`,
+                                                fontWeight: "bold",
+                                                fontSize: {
+                                                    xs: '0.75rem',
+                                                    sm: '0.875rem',
+                                                },
+                                            }}
+                                        >
+                                            Brand: {product.brand ? (product.brand.length > 7 ? `${product.brand.slice(0, 7)}...` : product.brand) : "Unknown"}
                                         </Typography>
 
                                         {/* Rating Section */}
@@ -296,14 +332,36 @@ const SearchResultsPage = () => {
                                         <Stack direction="row" spacing={1} alignItems="center">
                                             {/* Original Price (Strikethrough) */}
                                             {product.price && (
-                                                <Typography variant="body1" color="text.secondary" sx={{ fontFamily: `"Montserrat", sans-serif`, textDecoration: "line-through" }}>
-                                                    ₹{product.price}
+                                                <Typography
+                                                    variant="body1"
+                                                    color="text.secondary"
+                                                    sx={{
+                                                        fontFamily: `"Montserrat", sans-serif`,
+                                                        textDecoration: "line-through",
+                                                        fontSize: {
+                                                            xs: '0.85rem', // smaller on mobile
+                                                            sm: '1rem',
+                                                        },
+                                                    }}
+                                                >
+                                                    ₹ {product.price}
                                                 </Typography>
                                             )}
 
                                             {/* Final Price (Highlighted) */}
-                                            <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="h6" color="error" fontWeight="bold">
-                                                ₹{product.finalPrice || product.price}
+                                            <Typography
+                                                sx={{
+                                                    fontFamily: `"Montserrat", sans-serif`,
+                                                    fontWeight: 'bold',
+                                                    fontSize: {
+                                                        xs: '1rem', // smaller on mobile
+                                                        sm: '1.25rem',
+                                                    },
+                                                }}
+                                                variant="h6"
+                                                color="error"
+                                            >
+                                                ₹ {product.finalPrice || product.price}
                                             </Typography>
                                         </Stack>
 

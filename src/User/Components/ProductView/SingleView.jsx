@@ -104,7 +104,7 @@ const SingleProductView = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: 'rgba(255, 255, 255, 0.6)', // optional: dim background
+          
           zIndex: 9999,
         }}
       >
