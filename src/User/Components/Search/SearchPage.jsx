@@ -385,13 +385,18 @@ const SearchResultsPage = () => {
             {isLoginOpen && <LoginModal show={isLoginOpen} handleClose={closeLoginModal} />}
 
             {/* Snackbar for Success Message */}
-            <Snackbar
-                open={!!successMessage}
-                autoHideDuration={3000}
-                onClose={() => setSuccessMessage("")}
-                message={successMessage}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-            />
+           <Snackbar
+                   open={!!successMessage}
+                   autoHideDuration={3000}
+                   onClose={() => setSuccessMessage("")}
+                   message={successMessage}
+                   anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                   action={
+                     <Button color="white" size="small" onClick={handleViewClick}>
+                       View
+                     </Button>
+                   }
+                 />
         </Box>
     );
 };

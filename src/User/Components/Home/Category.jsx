@@ -17,7 +17,7 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 const CategoryNav = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mainCategories, setMainCategories] = useState([]);
   const [categories, setCategories] = useState({});
   const [subCategories, setSubCategories] = useState({});
@@ -35,21 +35,18 @@ const CategoryNav = () => {
     const fetchMainCategories = async () => {
       try {
         const data = await viewMainCategories();
-        // Store all categories and mark last two as coming soon
         const categoriesWithStatus = data.mainCategories.map((cat, index, arr) => ({
           ...cat,
-          isComingSoon: index >= arr.length - 2 // Last two categories
+          isComingSoon: index >= arr.length - 2
         }));
         setMainCategories(categoriesWithStatus);
         
-        // Pre-load categories only for non-coming soon main categories
         await Promise.all(categoriesWithStatus
           .filter(cat => !cat.isComingSoon)
           .map(async (mainCat) => {
             const catData = await viewCategories(mainCat._id);
             setCategories(prev => ({ ...prev, [mainCat._id]: catData }));
             
-            // Pre-load subcategories
             await Promise.all(catData.map(async (category) => {
               const subCatData = await viewSubCategories(mainCat._id, category._id);
               setSubCategories(prev => ({ ...prev, [category._id]: subCatData }));
@@ -109,28 +106,39 @@ const CategoryNav = () => {
         </Box> Categories
       </Typography>
 
-      <Box
-        display="flex"
-        flexWrap="wrap"
-        justifyContent="center"
-        gap={isMobile ? 2 : 3}
-        py={3}
-        px={isMobile ? 1 : 2}
-        bgcolor="white"
-        borderRadius={2}
-      >
-        {loading ? (
-          <Box display="flex" justifyContent="center" width="100%">
-            <CircularProgress />
-          </Box>
-        ) : (
-          mainCategories.map((mainCategory, index) => (
-            <Box key={mainCategory._id} sx={{ 
-              width: isMobile ? '45%' : 'auto',
-              minWidth: isMobile ? '120px' : 'auto',
-              position: 'relative',
-              opacity: mainCategory.isComingSoon ? 0.6 : 1
-            }}>
+      {loading ? (
+        <Box display="flex" justifyContent="center" width="100%" py={4}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: isMobile ? 'flex-start' : 'center',
+            overflowX: isMobile ? 'auto' : 'hidden',
+            overflowY: 'hidden',
+            py: 3,
+            px: isMobile ? 1 : 0,
+            gap: isMobile ? 2 : 3,
+            scrollbarWidth: 'none',
+            '&::-webkit-scrollbar': {
+              display: 'none'
+            },
+            width: '100%',
+            maxWidth: '100%',
+            flexWrap: isMobile ? 'nowrap' : 'wrap'
+          }}
+        >
+          {mainCategories.map((mainCategory) => (
+            <Box 
+              key={mainCategory._id} 
+              sx={{ 
+                minWidth: isMobile ? 150 : 180,
+                position: 'relative',
+                flexShrink: 0,
+                opacity: mainCategory.isComingSoon ? 0.6 : 1
+              }}
+            >
               {mainCategory.isComingSoon && (
                 <Chip 
                   label="Coming Soon" 
@@ -141,7 +149,8 @@ const CategoryNav = () => {
                     right: 5,
                     zIndex: 1,
                     backgroundColor: theme.palette.grey[300],
-                    color: theme.palette.text.secondary
+                    color: theme.palette.text.secondary,
+                    fontSize: '0.65rem'
                   }}
                 />
               )}
@@ -153,6 +162,17 @@ const CategoryNav = () => {
                   flexDirection: "column",
                   alignItems: "center",
                   cursor: mainCategory.isComingSoon ? 'default' : 'pointer',
+                  backgroundColor: 'white',
+                  borderRadius: 3,
+                  p: 2,
+                  height: '100%',
+                  boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.08)',
+                  transition: 'transform 0.3s, box-shadow 0.3s',
+                  '&:hover': !mainCategory.isComingSoon ? {
+                    transform: 'translateY(-5px)',
+                    boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.12)'
+                  } : {},
+                  border: '1px solid rgba(0, 0, 0, 0.05)'
                 }}
               >
                 <Box
@@ -162,26 +182,31 @@ const CategoryNav = () => {
                   sx={{
                     width: isMobile ? 70 : 80,
                     height: isMobile ? 70 : 80,
-                    borderRadius: "4px",
+                    // borderRadius: "50%",
                     objectFit: "cover",
-                    mb: 1,
-                    border: "1px solid #f0f0f0",
-                    boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
+                    mb: 1.5,
+                    // border: "2px solid #f5f5f5",
                     filter: mainCategory.isComingSoon ? 'grayscale(80%)' : 'none'
                   }}
                 />
                 <Typography
                   variant={isMobile ? "body2" : "body1"}
                   sx={{
-                    fontWeight: 500,
+                    fontWeight: 600,
                     color: mainCategory.isComingSoon ? 'text.disabled' : 'text.primary',
                     fontFamily: `"Montserrat", sans-serif`,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    mb: 0.5
                   }}
                 >
                   {mainCategory.name}
-                  {!mainCategory.isComingSoon && <ArrowDropDownIcon fontSize={isMobile ? "small" : "medium"} />}
                 </Typography>
+                {/* {!mainCategory.isComingSoon && (
+                  <ArrowDropDownIcon 
+                    fontSize={isMobile ? "small" : "medium"} 
+                    sx={{ color: 'primary.main' }} 
+                  />
+                )} */}
               </Box>
 
               {!mainCategory.isComingSoon && (
@@ -193,9 +218,9 @@ const CategoryNav = () => {
                     PaperProps={{
                       sx: {
                         mt: 1,
-                        minWidth: 200,
+                        minWidth: 220,
                         boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-                        borderRadius: "8px",
+                        borderRadius: "12px",
                       },
                     }}
                   >
@@ -210,7 +235,9 @@ const CategoryNav = () => {
                           },
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'center'
+                          alignItems: 'center',
+                          borderRadius: '8px',
+                          my: 0.5
                         }}
                       >
                         <Typography
@@ -223,7 +250,7 @@ const CategoryNav = () => {
                           {category.name}
                         </Typography>
                         {subCategories[category._id]?.length > 0 && (
-                          <ArrowRightIcon fontSize="small" />
+                          <ArrowRightIcon fontSize="small" color="primary" />
                         )}
                       </MenuItem>
                     ))}
@@ -236,9 +263,9 @@ const CategoryNav = () => {
                     PaperProps={{
                       sx: {
                         mt: 1,
-                        minWidth: 200,
+                        minWidth: 220,
                         boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-                        borderRadius: "8px",
+                        borderRadius: "12px",
                       },
                     }}
                   >
@@ -251,6 +278,8 @@ const CategoryNav = () => {
                           "&:hover": {
                             backgroundColor: "#f5f5f5",
                           },
+                          borderRadius: '8px',
+                          my: 0.5
                         }}
                       >
                         <Typography
@@ -268,9 +297,9 @@ const CategoryNav = () => {
                 </>
               )}
             </Box>
-          ))
-        )}
-      </Box>
+          ))}
+        </Box>
+      )}
     </Container>
   );
 };
