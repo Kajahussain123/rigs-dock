@@ -344,7 +344,7 @@ const SearchResultsPage = () => {
                                                         },
                                                     }}
                                                 >
-                                                    ₹ {product.price}
+                                                    ₹ {product.price.toLocaleString('en-IN')}
                                                 </Typography>
                                             )}
 
@@ -361,7 +361,7 @@ const SearchResultsPage = () => {
                                                 variant="h6"
                                                 color="error"
                                             >
-                                                ₹ {product.finalPrice || product.price}
+                                               ₹ {(product.finalPrice || product.price).toLocaleString('en-IN')}
                                             </Typography>
                                         </Stack>
 

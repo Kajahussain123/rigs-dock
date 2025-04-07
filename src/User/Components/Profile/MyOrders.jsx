@@ -77,7 +77,7 @@ const MyOrders = () => {
                   {item.product.name}
                 </Typography>
                 <Typography  variant="h6" fontWeight="bold" sx={{fontFamily: `"Montserrat", sans-serif`, mt: 0.5 }}>
-                  ₹{item.product.finalPrice}
+                  ₹{item.product.finalPrice.toLocaleString('en-IN')}
                 </Typography>
                 <Typography variant="body2" color="textSecondary" sx={{fontFamily: `"Montserrat", sans-serif`, mt: 0.5 }}>
                   {order.orderStatus === "Delivered" ? "Delivered on" : "Expected Delivery:"} {order.createdAt}

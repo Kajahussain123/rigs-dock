@@ -97,7 +97,7 @@ const OrderDetails = () => {
                       Brand: {item.product.brand}
                     </Typography>
                     <Typography variant="h6" color="primary" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
-                      ₹{item.product.finalPrice}
+                      ₹{item.product.finalPrice.toLocaleString('en-IN')}
                     </Typography>
                   </Box>
                 </Box>
@@ -169,24 +169,24 @@ const OrderDetails = () => {
                 <Box display="flex" justifyContent="space-between" sx={{ mt: 1 }}>
                   <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>List Price</Typography>
                   <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, textDecoration: "line-through" }}>
-                    ₹{order.items[0].product.price}
+                    ₹{order.items[0].product.price.toLocaleString('en-IN')}
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between">
                   <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>Selling Price</Typography>
-                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>₹{order.items[0].product.finalPrice}</Typography>
+                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>₹{order.items[0].product.finalPrice.toLocaleString('en-IN')}</Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between">
                   <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>Delivery Fee</Typography>
                   <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
-                    {order.items[0].product.deliveryfee ? `₹${order.items[0].product.deliveryfee}` : "Free"}
+                    {order.items[0].product.deliveryfee ? `₹${order.items[0].product.deliveryfee.toLocaleString('en-IN')}` : "Free"}
                   </Typography>
                 </Box>
                 <Divider sx={{ my: 1 }} />
                 <Box display="flex" justifyContent="space-between">
                   <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>Total Price</Typography>
                   <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold" }}>
-                    ₹{order.totalPrice}
+                    ₹{order.totalPrice.toLocaleString('en-IN')}
                   </Typography>
                 </Box>
               </Box>

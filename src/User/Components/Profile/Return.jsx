@@ -92,7 +92,7 @@ const ReturnProduct = () => {
                     />
                     <Box>
                         <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} fontWeight="bold" variant="h6">{product.name}</Typography>
-                        <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="body2"><strong>Price:</strong> ₹{product.price}</Typography>
+                        <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="body2"><strong>Price:</strong> ₹{product.price.toLocaleString('en-IN')}</Typography>
                     </Box>
                 </Box>
             )}

@@ -222,13 +222,13 @@ const SimilarProducts = () => {
                     {/* Original Price (Strikethrough) */}
                     {product.price && (
                       <Typography variant="body1" color="text.secondary" sx={{ fontFamily: `"Montserrat", sans-serif`, textDecoration: "line-through" }}>
-                        ₹ {product.price}
+                        ₹ {product.price.toLocaleString('en-IN')}
                       </Typography>
                     )}
 
                     {/* Final Price (Highlighted) */}
                     <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, }} variant="h6" color="error" fontWeight="bold">
-                    ₹ {product.finalPrice || product.price}
+                    ₹ {(product.finalPrice || product.price).toLocaleString('en-IN')}
                     </Typography>
                   </Stack>
 

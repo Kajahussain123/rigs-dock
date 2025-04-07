@@ -190,9 +190,9 @@ const SingleProductView = () => {
               <Box>
                 <Box display="flex" alignItems="center">
                   <Typography variant="h6" color="primary" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
-                    ₹{product.finalPrice}
+                    ₹{product.finalPrice.toLocaleString('en-IN')}
                     <Typography component="span" sx={{ textDecoration: "line-through", color: "gray", ml: 1, fontFamily: `"Montserrat", sans-serif` }}>
-                      ₹{product.price}
+                      ₹{product.price.toLocaleString('en-IN')}
                     </Typography>
                     {product.price > product.finalPrice && (
                       <Chip

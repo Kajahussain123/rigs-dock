@@ -210,7 +210,7 @@ const DealsSlider = () => {
                                                 textDecoration: 'line-through',
                                             }}
                                         >
-                                            ₹{deal.product.price}
+                                            ₹{deal.product.price.toLocaleString('en-IN')}
                                         </Typography>
                                         <Typography
                                             sx={{
@@ -221,7 +221,7 @@ const DealsSlider = () => {
                                                 ml: 2
                                             }}
                                         >
-                                            ₹{deal.offerPrice}
+                                            ₹{deal.offerPrice.toLocaleString('en-IN')}
                                         </Typography>
                                     </Box>
 

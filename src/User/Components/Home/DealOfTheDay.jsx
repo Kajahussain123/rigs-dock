@@ -175,12 +175,16 @@ const DealOfTheDay = () => {
                       alignItems: { xs: 'center', sm: 'flex-start' },
                       mb: 2
                     }}>
-                      <Typography sx={{
-                        fontFamily: `"Montserrat", sans-serif`,
-                        fontSize: { xs: "1rem", sm: "1rem" }
-                      }}>
-                        <s> ₹{products[0].product.price} </s> <b> ₹{products[0].offerPrice}</b>
+                      <Typography
+                        sx={{
+                          fontFamily: `"Montserrat", sans-serif`,
+                          fontSize: { xs: "1rem", sm: "1rem" }
+                        }}
+                      >
+                        <s> ₹{products[0].product.price.toLocaleString('en-IN')} </s>{' '}
+                        <b> ₹{products[0].offerPrice.toLocaleString('en-IN')}</b>
                       </Typography>
+
                     </Box>
                   </Box>
 
@@ -224,10 +228,10 @@ const DealOfTheDay = () => {
                   </Typography>
                   <Box sx={{ display: "flex", flexDirection: "column", mb: 1 }}>
                     <Typography variant="body1" sx={{ textDecoration: "line-through", color: "#666", fontFamily: `"Montserrat", sans-serif` }}>
-                      ₹{item.product.price}
+                      ₹{item.product.price.toLocaleString('en-IN')}
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: "bold", fontFamily: `"Montserrat", sans-serif`, color: "#D10000" }}>
-                      ₹{item.offerPrice}
+                      ₹{item.offerPrice.toLocaleString('en-IN')}
                     </Typography>
                   </Box>
                   <Box sx={{ position: "absolute", top: 10, right: 10, backgroundColor: "#D10000", color: "white", padding: "5px 10px", borderRadius: 1 }}>

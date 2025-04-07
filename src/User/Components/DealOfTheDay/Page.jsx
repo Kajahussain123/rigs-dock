@@ -317,7 +317,7 @@ const DealOfTheDayPage = () => {
                               },
                             }}
                           >
-                            ₹ {product.price}
+                            ₹ {product.price.toLocaleString('en-IN')}
                           </Typography>
                         )}
 
@@ -327,14 +327,14 @@ const DealOfTheDayPage = () => {
                             fontFamily: `"Montserrat", sans-serif`,
                             fontWeight: 'bold',
                             fontSize: {
-                              xs: '1rem', // smaller on mobile
+                              xs: '0.85rem', // smaller on mobile
                               sm: '1.25rem',
                             },
                           }}
                           variant="h6"
                           color="error"
                         >
-                          ₹ {product.finalPrice || product.price}
+                          ₹ {(product.finalPrice || product.price).toLocaleString('en-IN')}
                         </Typography>
                       </Stack>
 

@@ -53,10 +53,10 @@ const ProductCard = ({ product, handleAddToCart }) => {
         </Typography>
 
         <Typography variant="body2" sx={{ textDecoration: "line-through", fontFamily: `"Montserrat", sans-serif` }}>
-          ₹ {product.price}
+          ₹ {product.price.toLocaleString('en-IN')}
         </Typography>
         <Typography variant="body2" color="error" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
-          ₹ {product.finalPrice || product.price}
+        ₹ {(product.finalPrice || product.price).toLocaleString('en-IN')}
         </Typography>
       </Box>
       <Button

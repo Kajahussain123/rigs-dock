@@ -96,7 +96,7 @@ const WishlistPage = () => {
                       {item.name}
                     </Typography>
                     <Typography color="text.secondary" sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold", fontSize: "18px" }}>
-                    ₹ {item.finalPrice}
+                    ₹ {item.finalPrice.toLocaleString('en-IN')}
                     </Typography>
                   </CardContent>
                   <IconButton color="error" onClick={(e) => { e.stopPropagation(); handleRemoveClick(item); }}>

@@ -141,7 +141,7 @@ const MyWishlist = () => {
 
                   {/* Price and Discount */}
                   <Typography variant="h6" fontWeight="bold" sx={{ mt: 1 }}>
-                  ₹{item.finalPrice}
+                  ₹{item.finalPrice.toLocaleString('en-IN')}
                     {item.oldPrice && (
                       <>
                         <Typography

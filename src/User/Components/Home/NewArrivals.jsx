@@ -109,9 +109,9 @@ const NewArrivals = () => {
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
                   <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
                     {discountPercentage > 0 && (
-                      <s>₹ {product.price}</s>
+                      <s>₹ {product.price.toLocaleString('en-IN')}</s>
                     )}
-                    <b> ₹ {product.finalPrice}</b>
+                    <b> ₹ {product.finalPrice.toLocaleString('en-IN')}</b>
                   </Typography>
                   <Button
                     variant="text"
@@ -162,7 +162,7 @@ const NewArrivals = () => {
                   }
                 }}
               >
-                <s>₹ {product.price}</s> <b>₹ {product.finalPrice}</b>
+                <s>₹ {product.price.toLocaleString('en-IN')}</s> <b>₹ {product.finalPrice.toLocaleString('en-IN')}</b>
               </Typography>
 
               <Button sx={{ fontFamily: `"Montserrat", sans-serif` }} variant="contained" fullWidth onClick={(e) => handleAddToCart(e, product._id)}>Add to cart</Button>
