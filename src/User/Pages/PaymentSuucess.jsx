@@ -10,7 +10,7 @@ const PaymentStatus = () => {
     const [message, setMessage] = useState("Verifying your payment...");
     const [orderDetails, setOrderDetails] = useState(null);
 
-    const BASE_URL='http://localhost:3006'
+    const BASE_URL='https://rigsdock.com'
 
     useEffect(() => {
         // Check if we have a pending order in localStorage

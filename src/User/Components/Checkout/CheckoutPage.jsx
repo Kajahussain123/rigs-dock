@@ -372,7 +372,7 @@ const CheckoutPage = () => {
                       >
                         <FormControlLabel value="COD" control={<Radio color="primary" />} label="Cash on Delivery" />
                         <FormControlLabel value="PhonePe" control={<Radio color="primary" />} label="PhonePe" />
-                        <FormControlLabel value="Credit Card" control={<Radio color="primary" />} label="Pay Online (Cashfree)" />
+                        {/* <FormControlLabel value="Credit Card" control={<Radio color="primary" />} label="Pay Online (Cashfree)" /> */}
                       </RadioGroup>
                     </FormControl>
                   </Box>
