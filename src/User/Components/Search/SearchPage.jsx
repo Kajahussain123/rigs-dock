@@ -100,6 +100,18 @@ const SearchResultsPage = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const [wishlist, setWishlist] = useState(new Set());
     const [isLoginOpen, setIsLoginOpen] = useState(false);
+    const [snackbarAction, setSnackbarAction] = useState(null); // 'cart' or 'wishlist'
+
+
+    const handleViewClick = () => {
+        if (snackbarAction === "cart") {
+          navigate("/cart"); // Or use `window.location.href = '/cart'`
+        } else if (snackbarAction === "wishlist") {
+          navigate("/wishlist");
+        }
+        setSuccessMessage("");
+      };
+    
 
     const openLoginModal = () => {
         setIsLoginOpen(true);
@@ -361,7 +373,7 @@ const SearchResultsPage = () => {
                                                 variant="h6"
                                                 color="error"
                                             >
-                                               ₹ {(product.finalPrice || product.price).toLocaleString('en-IN')}
+                                                ₹ {(product.finalPrice || product.price).toLocaleString('en-IN')}
                                             </Typography>
                                         </Stack>
 
@@ -385,18 +397,18 @@ const SearchResultsPage = () => {
             {isLoginOpen && <LoginModal show={isLoginOpen} handleClose={closeLoginModal} />}
 
             {/* Snackbar for Success Message */}
-           <Snackbar
-                   open={!!successMessage}
-                   autoHideDuration={3000}
-                   onClose={() => setSuccessMessage("")}
-                   message={successMessage}
-                   anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                   action={
-                     <Button color="white" size="small" onClick={handleViewClick}>
-                       View
-                     </Button>
-                   }
-                 />
+            <Snackbar
+                open={!!successMessage}
+                autoHideDuration={3000}
+                onClose={() => setSuccessMessage("")}
+                message={successMessage}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                action={
+                    <Button color="white" size="small" onClick={handleViewClick}>
+                        View
+                    </Button>
+                }
+            />
         </Box>
     );
 };

@@ -4,7 +4,7 @@ import { Carousel } from 'react-responsive-carousel';
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import BannerImg3 from "../../../Assets/BannerImg2.jpg";
 import BannerImg5 from "../../../Assets/BannerImg3.jpg";
-import BannerImg1 from "../../../Assets/BannerImg4.webp";
+import BannerImg1 from "../../../Assets/BannerImg4.jpg";
 import BannerImg4 from "../../../Assets/BannerImg5.jpg";
 import BannerImg2 from "../../../Assets/BannerImg6.jpg";
 

@@ -73,7 +73,8 @@ const CheckoutPage = () => {
     navigate('/profile/address'); // Replace with your route for adding a new address
   };
 
-  // Confirm Order Function
+  
+  
   // const handleConfirmOrder = async () => {
   //   try {
   //     if (!userId || !selectedAddress) {
@@ -87,89 +88,65 @@ const CheckoutPage = () => {
   //       paymentMethod,
   //     };
 
-  //     const response = await confirmOrder(orderData); // Use the confirmOrder API
-  //     console.log("Order placed successfully:", response);
+  //     const response = await confirmOrder(orderData);
+  //     console.log("Full API Response:", response);
 
-  //     // Redirect to order confirmation page or show success message
-  //     navigate('/order-confirmation'); // Replace with your order confirmation route
+  //     if (paymentMethod === "COD") {
+  //       navigate("/order-confirmation");
+
+  //     } else if (paymentMethod === "PhonePe") {  // Ensure correct method name
+  //       const paymentUrl = response?.paymentUrl;
+
+  //       if (paymentUrl) {
+  //         console.log("Redirecting to:", paymentUrl);
+  //         window.location.href = paymentUrl;
+  //       } else {
+  //         alert("Error: Payment URL not received.");
+  //       }
+  //     }
   //   } catch (error) {
   //     console.error("Failed to place order", error);
   //     alert("Failed to place order. Please try again.");
   //   }
   // };
 
-  //   const handleConfirmOrder = async () => {
-  //     try {
-  //         if (!userId || !selectedAddress) {
-  //             alert("Please select a shipping address.");
-  //             return;
-  //         }
-
-  //         const orderData = {
-  //             userId,
-  //             shippingAddressId: selectedAddress,
-  //             paymentMethod,
-  //         };
-
-  //         const response = await confirmOrder(orderData);
-  //         console.log("Full API Response:", response);
-
-  //         if (paymentMethod === "COD") {
-  //             navigate("/order-confirmation");
-
-  //         } else if (paymentMethod === "UPI") {
-  //             const paymentUrl = response?.paymentUrl; // No need for response.data.paymentUrl
-
-
-  //             if (paymentUrl) {
-  //                 console.log("Redirecting to:", paymentUrl);
-  //                 window.location.href = paymentUrl; // Redirect to payment gateway
-  //                 // Alternative if redirection fails: window.open(paymentUrl, "_self");
-  //             } else {
-  //                 alert("Error: Payment URL not received.");
-  //             }
-  //         }
-  //     } catch (error) {
-  //         console.error("Failed to place order", error);
-  //         alert("Failed to place order. Please try again.");
-  //     }
-  // };
   const handleConfirmOrder = async () => {
     try {
       if (!userId || !selectedAddress) {
         alert("Please select a shipping address.");
         return;
       }
-
+  
       const orderData = {
         userId,
         shippingAddressId: selectedAddress,
         paymentMethod,
       };
-
+  
       const response = await confirmOrder(orderData);
-      console.log("Full API Response:", response);
-
+      
       if (paymentMethod === "COD") {
-        navigate("/order-confirmation");
-
-      } else if (paymentMethod === "PhonePe") {  // Ensure correct method name
-        const paymentUrl = response?.paymentUrl;
-
-        if (paymentUrl) {
-          console.log("Redirecting to:", paymentUrl);
-          window.location.href = paymentUrl;
+        navigate("/order-confirmation", { state: { orderId: response.mainOrderId } });
+      } else if (paymentMethod === "PhonePe") {
+        if (response.paymentUrl) {
+          // Store order details in localStorage in case user comes back without completing payment
+          localStorage.setItem('pendingPhonePeOrder', JSON.stringify({
+            mainOrderId: response.mainOrderId,
+            transactionId: response.phonepeTransactionId,
+            timestamp: new Date().getTime()
+          }));
+          
+          // Redirect to PhonePe payment page
+          window.location.href = response.paymentUrl;
         } else {
-          alert("Error: Payment URL not received.");
+          throw new Error("Payment URL not received from server");
         }
       }
     } catch (error) {
       console.error("Failed to place order", error);
-      alert("Failed to place order. Please try again.");
+      alert(`Failed to place order: ${error.message}`);
     }
   };
-
-
 
 
   return (
