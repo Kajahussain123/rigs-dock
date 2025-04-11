@@ -4,18 +4,35 @@ import {
   Container,
   Typography,
   Grid,
-  Paper,
-  Button,
-  Divider,
   Card,
   CardContent,
   CardMedia,
   CircularProgress,
+  Button,
+  Divider,
+  Stepper,
+  Step,
+  StepLabel,
+  StepConnector,
+  styled,
 } from "@mui/material";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import { useNavigate, useParams } from "react-router-dom";
 import { orderDetails } from "../../../Services/allApi";
 import placeholder from "../../../Assets/PlacHolder.png";
+
+// Custom styled connector for the stepper
+const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
+  [`&.MuiStepConnector-root`]: {
+    left: 'calc(-50% + 16px)',
+    right: 'calc(50% + 16px)',
+  },
+  [`&.MuiStepConnector-active, &.MuiStepConnector-completed`]: {
+    [`& .MuiStepConnector-line`]: {
+      borderColor: theme.palette.success.main,
+    },
+  },
+}));
 
 const OrderDetails = () => {
   const { orderId } = useParams();
@@ -39,6 +56,30 @@ const OrderDetails = () => {
     };
     fetchOrder();
   }, [orderId]);
+
+  // Define tracking steps based on order status
+  const getTrackingSteps = () => {
+    return [
+      { label: "Order Placed", status: "placed" },
+      { label: "Processing", status: "processing" },
+      { label: "Shipped", status: "shipped" },
+      { label: "Out for Delivery", status: "outForDelivery" },
+      { label: "Delivered", status: "delivered" },
+    ];
+  };
+
+  // Determine active step based on order status
+  const getActiveStep = (orderStatus) => {
+    const steps = getTrackingSteps();
+    const statusMap = {
+      "Placed": 0,
+      "Processing": 1,
+      "Shipped": 2,
+      "Out for Delivery": 3,
+      "Delivered": 4,
+    };
+    return statusMap[orderStatus] || 0;
+  };
 
   if (loading)
     return (
@@ -68,13 +109,13 @@ const OrderDetails = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ my: 4 }}>
-      <Typography variant="h4" fontWeight="bold" sx={{ mb: 4, fontFamily: `"Montserrat", sans-serif` }}>
+    <Container maxWidth="lg" sx={{ my: 2 }}>
+      <Typography variant="h5" fontWeight="bold" sx={{ mb: 4, fontFamily: `"Montserrat", sans-serif` }}>
         Order Details
       </Typography>
 
       <Grid container spacing={4}>
-        {/* Left Section - Order Items */}
+        {/* Left Section - Order Items and Tracking */}
         <Grid item xs={12} md={8}>
           <Card elevation={3}>
             <CardContent>
@@ -104,6 +145,42 @@ const OrderDetails = () => {
               ))}
             </CardContent>
           </Card>
+          {/* Tracking Section */}
+          <Card elevation={3} sx={{mt:2}}>
+            <CardContent>
+              <Typography variant="h6" fontWeight="bold" sx={{ mb: 3, fontFamily: `"Montserrat", sans-serif` }}>
+                Order Tracking
+              </Typography>
+              <Stepper
+                activeStep={getActiveStep(order.orderStatus)}
+                orientation="vertical"
+                connector={<ColorlibConnector />}
+              >
+                {getTrackingSteps().map((step, index) => (
+                  <Step key={step.label}>
+                    <StepLabel
+                      sx={{
+                        '& .MuiStepLabel-label': {
+                          fontFamily: `"Montserrat", sans-serif`,
+                          fontWeight: 'bold',
+                        },
+                      }}
+                    >
+                      {step.label}
+                      {index <= getActiveStep(order.orderStatus) && (
+                        <Typography variant="caption" color="text.secondary" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                          {index === getActiveStep(order.orderStatus) ? `In progress` : `Completed`}
+                        </Typography>
+                      )}
+                    </StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            </CardContent>
+          </Card>
+
+          {/* Order Items Section */}
+
         </Grid>
 
         {/* Right Section - Order Summary */}
@@ -197,7 +274,7 @@ const OrderDetails = () => {
 
       {/* Return & Review Buttons (only if delivered) */}
       {order.orderStatus === "Delivered" && (
-        <Box mt={4} display="flex" justifyContent="center" gap={2}>
+        <Box mt={4} display="flex" justifyContent="end" gap={2}>
           {order.items.map((item) => (
             <Box key={item.product._id} display="flex" gap={2}>
               <Button

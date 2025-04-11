@@ -5,7 +5,7 @@ import {Box,TextField,Button,Typography,Paper,Grid,FormControlLabel,Checkbox,Con
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CloseIcon from '@mui/icons-material/Close';
-import { vendorRegister, verifyBank } from '../../../Services/allApi';
+import { vendorRegister } from '../../../Services/allApi';
 
 const UploadBox = ({ title, onFileChange }) => (
   <Box
@@ -59,8 +59,7 @@ const BecomeSeller = () => {
     storelogo: null,
     license: null,
     images: [],
-    bankAccountNumber:'',
-    ifscCode:'',
+   
   });
   const [preview, setPreview] = useState({
     storelogo: null,
@@ -69,7 +68,7 @@ const BecomeSeller = () => {
   });
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [bankVerified, setBankVerified] = useState(false);
+ 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -119,11 +118,7 @@ const BecomeSeller = () => {
 
   const handleSubmit = async () => {
 
-    if (!bankVerified) {
-      setSnackbarMessage("Please verify your bank details first.");
-      setSnackbarOpen(true);
-      return;
-    }
+  
     const data = new FormData();
     Object.keys(formData).forEach(key => {
       if (key === 'images') {
@@ -157,50 +152,7 @@ const BecomeSeller = () => {
     });
   };
 
-  const handleBankVerification = async () => {
-    try {
-      if (!formData.bankAccountNumber.trim() || !formData.ifscCode.trim()) {
-        setSnackbarMessage("Please enter both account number and IFSC code");
-        setSnackbarOpen(true);
-        return;
-      }
   
-      console.log('Sending verification request for:', {
-        accountNumber: formData.bankAccountNumber,
-        ifscCode: formData.ifscCode
-      });
-  
-      const response = await verifyBank(
-        formData.bankAccountNumber, 
-        formData.ifscCode
-      );
-      
-      console.log('Verification response:', response);
-      
-      if (response.success) {
-        setSnackbarMessage(`Verified! Account holder: ${response.data.name}`);
-        setBankVerified(true);
-        setFormData(prev => ({
-          ...prev,
-          accountHolderName: response.data.name,
-          bankName: response.data.bank
-        }));
-      } else {
-        setSnackbarMessage(response.error || "Bank verification failed");
-        setBankVerified(false);
-      }
-    } catch (error) {
-      console.error('Verification error:', error);
-      setSnackbarMessage(
-        error.response?.data?.error?.message || 
-        error.message || 
-        "Bank verification error"
-      );
-      setBankVerified(false);
-    } finally {
-      setSnackbarOpen(true);
-    }
-  };
 
   
   const handleCloseSnackbar = () => {
@@ -320,33 +272,7 @@ const BecomeSeller = () => {
                   label="By Continuing, I Agree To Rigsdock Terms Of Use & Privacy Policy"
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
-  <TextField 
-    fullWidth 
-    label="Bank Account Number" 
-    name="bankAccountNumber" 
-    onChange={handleInputChange} 
-    value={formData.bankAccountNumber}
-    required
-  />
-  <TextField 
-    fullWidth 
-    label="IFSC Code" 
-    name="ifscCode" 
-    onChange={handleInputChange} 
-    value={formData.ifscCode} 
-    sx={{ mt: 2 }} 
-    required
-  />
-  <Button 
-    variant="contained" 
-    onClick={handleBankVerification} 
-    sx={{ mt: 2 }} 
-    disabled={bankVerified || !formData.bankAccountNumber || !formData.ifscCode}
-  >
-    Verify Bank Details
-  </Button>
-</Grid>
+             
               <Grid item xs={12} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                 <Button
                   variant="contained"
