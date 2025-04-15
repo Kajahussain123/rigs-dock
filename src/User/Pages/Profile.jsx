@@ -62,7 +62,7 @@ const Profile = () => {
               <Route path="return/:orderId/:productId" element={<ReturnProduct />} />
               <Route path="orders" element={<MyOrders />} />
               <Route path="track" element={<TrackingPage />} />
-              <Route path="addReview/:productId" element={<ProductReview />} />
+              <Route path="addReview/:productId/:orderId" element={<ProductReview />} />
               <Route path="order-details/:orderId" element={<OrderDetails />} />
             </Routes>
           </Grid>

@@ -265,7 +265,7 @@ const SearchResultsPage = () => {
           <Typography variant="h6">Search Results for "{searchQuery}"</Typography>
         </Toolbar> */}
             </AppBar>
-            <Container sx={{ py: 4 }}>
+            <Container sx={{ py: 4 , mt:5 }}>
                 <FilterSearch
                     onFilterChange={handleFilterChange}
                     products={products} // Pass the products array

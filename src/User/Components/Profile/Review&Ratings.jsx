@@ -65,17 +65,16 @@ const MyReviews = () => {
               <Grid item xs={3} sm={2}>
                 {review.images.length > 0 ? (
                   <CardMedia
-                    component="img"
-                    image={`https://rigsdock.com/uploads/${review.product.images?.[0]}`}
-                    // image={placeholder}
-                    alt={review.product.name}
-                    sx={{
-                      width: "100%",
-                      height: "auto",
-                      maxHeight: "80px",
-                      objectFit: "contain",
-                    }}
-                  />
+                  component="img"
+                  image={`https://rigsdock.com/uploads/${review.images?.[0]}`}
+                  sx={{
+                    width: "100%",
+                    height: "auto",
+                    maxHeight: "80px",
+                    objectFit: "contain",
+                  }}
+                />
+                
                 ) : (
                   <Typography>No Image</Typography>
                 )}

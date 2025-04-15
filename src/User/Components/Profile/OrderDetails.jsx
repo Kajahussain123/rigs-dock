@@ -100,8 +100,8 @@ const OrderDetails = () => {
       </Typography>
     );
 
-  const handleAddRating = (productId) => {
-    navigate(`/profile/addReview/${productId}`);
+  const handleAddRating = (productId , orderId) => {
+    navigate(`/profile/addReview/${productId}/${orderId}`);
   };
 
   const handleReturnOrder = (orderId, productId) => {
@@ -285,7 +285,7 @@ const OrderDetails = () => {
                 Return Order
               </Button>
               <Button
-                onClick={() => handleAddRating(item.product._id)}
+                onClick={() => handleAddRating(item.product._id, order._id)}
                 variant="contained"
                 color="warning"
                 sx={{ fontFamily: `"Montserrat", sans-serif`, textTransform: "none", fontWeight: "bold" }}

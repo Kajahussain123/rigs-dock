@@ -35,8 +35,8 @@ const MyOrders = () => {
     navigate(`/profile/order-details/${orderId}`);  // ✅ Navigate with order ID in URL
   };
 
-  const handleAddRating = (productId) => {
-    navigate(`/profile/addReview/${productId}`); // ✅ Pass productId instead of orderId
+  const handleAddRating = (productId , orderId) => {
+    navigate(`/profile/addReview/${productId}/${orderId}`); // ✅ Pass productId instead of orderId
   };
 
 
@@ -107,7 +107,7 @@ const MyOrders = () => {
                         variant="text"
                         sx={{fontFamily: `"Montserrat", sans-serif`, color: "#ff9800", fontWeight: "bold", textTransform: "none" }}
                         startIcon={<StarIcon />}
-                        onClick={() => handleAddRating(order.items[0].product._id)} // Ensure correct path
+                        onClick={() => handleAddRating(order.items[0].product._id, order._id)}
                       >
                         Rate & Review Product
                       </Button>

@@ -5,10 +5,11 @@ import { addReviews, viewProductsById } from "../../../Services/allApi";
 import { useParams } from "react-router-dom";
 import placeholder from "../../../Assets/PlacHolder.png"
 
-const ProductReview = ({ productId: propProductId }) => {
-  // Get productId from props or URL params as fallback
-  const { productId: paramProductId } = useParams();
+const ProductReview = ({ productId: propProductId, orderId: propOrderId }) => {
+  // Get productId and orderId from props or URL params as fallback
+  const { productId: paramProductId, orderId: paramOrderId } = useParams();
   const productId = propProductId || paramProductId;
+  const orderId = propOrderId || paramOrderId;
   
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState({ title: "", description: "" });
@@ -21,14 +22,31 @@ const ProductReview = ({ productId: propProductId }) => {
   const [productLoading, setProductLoading] = useState(true);
   const userId = localStorage.getItem("userId");
 
+  // Debug logs for component props
+  useEffect(() => {
+    console.log("ProductReview component mounted with:", { 
+      productId, 
+      orderId,
+      userId 
+    });
+    
+    if (!productId) {
+      setError("Product ID is missing. Cannot submit review.");
+    }
+    
+    if (!orderId) {
+      setError("Order ID is missing. Cannot submit review.");
+    }
+    
+    if (!userId) {
+      setError("User ID is missing. Please log in to submit a review.");
+    }
+  }, [productId, orderId, userId]);
+
   // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
-      if (!productId) {
-        setError("Product ID is missing. Cannot fetch product details.");
-        setProductLoading(false);
-        return;
-      }
+      if (!productId) return;
 
       try {
         console.log("Fetching product with ID:", productId);
@@ -46,24 +64,6 @@ const ProductReview = ({ productId: propProductId }) => {
     fetchProduct();
   }, [productId]);
 
-  // Debug logs for component props
-  useEffect(() => {
-    console.log("ProductReview component mounted with:", { 
-      propProductId, 
-      paramProductId, 
-      finalProductId: productId, 
-      userId 
-    });
-    
-    if (!productId) {
-      setError("Product ID is missing. Cannot submit review.");
-    }
-    
-    if (!userId) {
-      setError("User ID is missing. Please log in to submit a review.");
-    }
-  }, [productId, userId, propProductId, paramProductId]);
-
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -75,6 +75,11 @@ const ProductReview = ({ productId: propProductId }) => {
   const handleSubmit = async () => {
     if (!productId) {
       setError("Product ID is missing");
+      return;
+    }
+    
+    if (!orderId) {
+      setError("Order ID is missing");
       return;
     }
     
@@ -100,6 +105,7 @@ const ProductReview = ({ productId: propProductId }) => {
     const formData = new FormData();
     formData.append("userId", userId);
     formData.append("productId", productId);
+    formData.append("orderId", orderId); // Add orderId to the form data
     formData.append("rating", rating);
     formData.append("review", review.description);
     
@@ -108,7 +114,6 @@ const ProductReview = ({ productId: propProductId }) => {
     }
 
     try {
-      // Log the form data before submission
       console.log("Submitting review with data:");
       for (let pair of formData.entries()) {
         console.log(pair[0] + ': ' + pair[1]);
@@ -147,15 +152,15 @@ const ProductReview = ({ productId: propProductId }) => {
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <CardMedia
             component="img"
-            image={placeholder}
-            // image={product.images?.[0] || "https://via.placeholder.com/80"}
+            image={`https://rigsdock.com/uploads/${product.images?.[0]}`}
             alt={product.name}
             sx={{ width: 80, height: 80, objectFit: "contain", borderRadius: 2, mr: 2 }}
           />
           <Box>
             <Typography variant="h6" fontWeight="bold">{product.name}</Typography>
             <Typography variant="body2" color="textSecondary">₹{product.price}</Typography>
-            <Typography variant="body2" color="primary">Product ID: {productId}</Typography>
+            {/* <Typography variant="body2" color="primary">Product ID: {productId}</Typography>
+            <Typography variant="body2" color="primary">Order ID: {orderId}</Typography> */}
           </Box>
         </Box>
       ) : (

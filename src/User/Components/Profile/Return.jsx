@@ -102,9 +102,9 @@ const ReturnProduct = () => {
             </Typography>
             <TextField  select fullWidth value={reason} onChange={(e) => setReason(e.target.value)} sx={{fontFamily: `"Montserrat", sans-serif`, mb: 3 }}>
                 <MenuItem value="Damaged Product">Damaged Product</MenuItem>
-                <MenuItem value="Wrong item received">Wrong item received</MenuItem>
-                <MenuItem value="Changed my mind">Changed my mind</MenuItem>
-                <MenuItem value="Other">Other</MenuItem>
+                <MenuItem value="Wrong Item">Wrong item received</MenuItem>
+                <MenuItem value="Missing Item">Missing Item</MenuItem>
+                <MenuItem value="Others">Other</MenuItem>
             </TextField>
 
             <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="h6" fontWeight="bold" gutterBottom>
@@ -121,7 +121,7 @@ const ReturnProduct = () => {
             />
 
             <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="h6" fontWeight="bold" gutterBottom>
-                Upload Image (Optional):
+                Upload Image :
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
                 {image && (
