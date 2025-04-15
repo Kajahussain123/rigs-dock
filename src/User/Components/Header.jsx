@@ -4,6 +4,7 @@ import { FaSearch, FaUser, FaHeart, FaStore, FaShoppingCart, FaBars, FaHome } fr
 import LoginModal from "./LoginModel";
 import { useNavigate } from "react-router-dom";
 import { cartCount, getAllProducts } from "../../Services/allApi"; // Import getAllProducts
+import { ToastContainer } from "react-toastify";
 
 const Header = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -66,7 +67,15 @@ const Header = () => {
     };
 
     fetchCartCount();
+
+    // Listen for custom event
+    window.addEventListener("cartUpdated", fetchCartCount);
+
+    return () => {
+      window.removeEventListener("cartUpdated", fetchCartCount);
+    };
   }, []);
+
 
   const handleProtectedNavigation = (e, path) => {
     if (!isLoggedIn()) {
@@ -87,10 +96,10 @@ const Header = () => {
 
   return (
     <>
- <Navbar expand="lg"className="py-2 shadow-sm fixed-top" 
-        style={{ 
-          backgroundColor: "#0A5FBF", 
-          zIndex: 1050 
+      <Navbar expand="lg" className="py-2 shadow-sm fixed-top"
+        style={{
+          backgroundColor: "#0A5FBF",
+          zIndex: 1050
         }}>        <Container>
           <Navbar.Brand href="/" className="me-3">
             <img src="https://i.postimg.cc/MKZkQfTh/logo.png" alt="Logo" height="40" />
@@ -195,22 +204,6 @@ const Header = () => {
           </Nav.Link>
           <Nav.Link
             href="#"
-            className="text-dark d-flex flex-column align-items-center"
-            onClick={(e) => handleProtectedNavigation(e, "/wishlist")}
-          >
-            <FaHeart size={20} />
-            <small>Wishlist</small>
-          </Nav.Link>
-          <Nav.Link
-            href="#"
-            className="text-dark d-flex flex-column align-items-center"
-            onClick={(e) => handleProtectedNavigation(e, "/seller")}
-          >
-            <FaStore size={20} />
-            <small>Seller</small>
-          </Nav.Link>
-          <Nav.Link
-            href="#"
             className="text-dark position-relative d-flex flex-column align-items-center"
             onClick={(e) => handleProtectedNavigation(e, "/cart")}
           >
@@ -225,7 +218,24 @@ const Header = () => {
               </span>
             )}
           </Nav.Link>
-
+          <Nav.Link
+            href="#"
+            className="text-dark d-flex flex-column align-items-center"
+            onClick={(e) => handleProtectedNavigation(e, "/wishlist")}
+          >
+            <FaHeart size={20} />
+            <small>Wishlist</small>
+          </Nav.Link>
+         
+          
+          <Nav.Link
+            href="#"
+            className="text-dark d-flex flex-column align-items-center"
+            onClick={(e) => handleProtectedNavigation(e, "/seller")}
+          >
+            <FaStore size={20} />
+            <small>Seller</small>
+          </Nav.Link>
           <Nav.Link
             href="#"
             className="text-dark d-flex flex-column align-items-center"
@@ -238,6 +248,7 @@ const Header = () => {
       </div>
 
       <LoginModal show={showLoginModal} handleClose={() => setShowLoginModal(false)} />
+        <ToastContainer></ToastContainer>
     </>
   );
 };

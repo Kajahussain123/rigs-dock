@@ -92,11 +92,15 @@ const WishlistPage = () => {
                     alt={item.name}
                   />
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold" }}>
-                      {item.name}
+                    <Typography
+                      variant="h6"
+                      sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold" }}
+                    >
+                      {item.name.length > 20 ? item.name.slice(0, 20) + '...' : item.name}
                     </Typography>
+
                     <Typography color="text.secondary" sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold", fontSize: "18px" }}>
-                    ₹ {item.finalPrice.toLocaleString('en-IN')}
+                      ₹ {item.finalPrice.toLocaleString('en-IN')}
                     </Typography>
                   </CardContent>
                   <IconButton color="error" onClick={(e) => { e.stopPropagation(); handleRemoveClick(item); }}>

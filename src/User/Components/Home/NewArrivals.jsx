@@ -37,6 +37,8 @@ const NewArrivals = () => {
       await addToCart(userId, productId, 1);
       setSuccessMessage("Product added to cart successfully!");
       setSnackbarAction("cart");
+      window.dispatchEvent(new Event("cartUpdated"));
+
     } catch (error) {
       console.error("Error adding product to cart", error);
     }

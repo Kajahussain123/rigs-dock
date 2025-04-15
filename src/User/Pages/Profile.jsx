@@ -48,7 +48,7 @@ const Profile = () => {
           <Grid item xs={12} sm={9} sx={{ pl: 2, pr: 2 }}>
             {/* Back Button - Only on mobile when sidebar is hidden */}
             {isMobile && !showSidebar && (
-              <Button variant="contained" sx={{ mb: 2 }} onClick={() => setShowSidebar(true)}>
+              <Button variant="outlined" sx={{ mb: 2 }} onClick={() => setShowSidebar(true)}>
                 Back
               </Button>
             )}

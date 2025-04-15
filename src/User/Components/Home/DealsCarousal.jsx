@@ -37,6 +37,7 @@ const DealsSlider = () => {
         try {
             await addToCart(userId, productId, 1);
             setSuccessMessage("Product added to cart successfully!");
+            
         } catch (error) {
             console.error("Error adding product to cart", error);
             alert("Failed to add product to cart. Try again.");

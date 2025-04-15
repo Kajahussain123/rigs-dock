@@ -109,6 +109,8 @@ const CartPage = () => {
         items: cart.items.filter((item) => item.id !== selectedProduct.id),
         totalPrice: cart.totalPrice - selectedProduct.totalPrice,
       });
+      window.dispatchEvent(new Event("cartUpdated"));
+
     } catch (error) {
       console.error("Error removing item:", error);
     } finally {
@@ -140,15 +142,15 @@ const CartPage = () => {
 
             // Use existing product details if available
             const product = existingItem
-  ? {
-      name: existingItem.name,
-      brand: existingItem.brand,
-      image: existingItem.image, // <-- use 'image' not 'images'
-      deliveryfee: existingItem.deliveryFee,
-      finalPrice: existingItem.price,
-      price: existingItem.price,
-    }
-  : {};
+              ? {
+                name: existingItem.name,
+                brand: existingItem.brand,
+                image: existingItem.image, // <-- use 'image' not 'images'
+                deliveryfee: existingItem.deliveryFee,
+                finalPrice: existingItem.price,
+                price: existingItem.price,
+              }
+              : {};
 
 
             const price = product.finalPrice || product.price || 0; // Fallback to 0 if price is missing
@@ -236,7 +238,7 @@ const CartPage = () => {
                     fontWeight="bold"
                     gutterBottom
                   >
-                    {item.name}
+                   {item.name.length > 20 ? item.name.slice(0, 30) + '...' : item.name}
                   </Typography>
                   <Typography
                     sx={{
