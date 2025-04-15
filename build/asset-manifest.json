@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.df7eab27.css",
-    "main.js": "/static/js/main.dded7d75.js",
+    "main.js": "/static/js/main.449dd2f5.js",
     "static/media/PlacHolder.png": "/static/media/PlacHolder.cdec2a0166c074290c09.png",
     "static/media/DOD.png": "/static/media/DOD.0b4ded087ee6c9a21aff.png",
     "static/media/BannerImg6.jpg": "/static/media/BannerImg6.818eb0fe947ab03bee80.jpg",
@@ -13,10 +13,10 @@
     "static/media/BannerImg5.jpg": "/static/media/BannerImg5.1b0bcd48f21e560a9f4a.jpg",
     "index.html": "/index.html",
     "main.df7eab27.css.map": "/static/css/main.df7eab27.css.map",
-    "main.dded7d75.js.map": "/static/js/main.dded7d75.js.map"
+    "main.449dd2f5.js.map": "/static/js/main.449dd2f5.js.map"
   },
   "entrypoints": [
     "static/css/main.df7eab27.css",
-    "static/js/main.dded7d75.js"
+    "static/js/main.449dd2f5.js"
   ]
 }

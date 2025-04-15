@@ -25,7 +25,7 @@ const ManageAddresses = () => {
   const [showForm, setShowForm] = useState(false);
   const [newAddress, setNewAddress] = useState({
     firstName: "",
-    lastName:"",
+    lastName: "",
     phone: "",
     addressLine1: "",
     addressLine2: "",
@@ -37,6 +37,16 @@ const ManageAddresses = () => {
   });
   const [successMessage, setSuccessMessage] = useState("");
   const [deleteDialog, setDeleteDialog] = useState({ open: false, addressId: null });
+  const indianStates = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+    "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+    "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+    "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands",
+    "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi",
+    "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+  ];
 
   const userId = localStorage.getItem("userId"); // Get userId from localStorage
 
@@ -61,25 +71,25 @@ const ManageAddresses = () => {
     try {
       const reqBody = { userId, ...newAddress };
       await addAddress(reqBody);
-  
+
       // ✅ Fetch updated addresses from the backend
       const updatedAddresses = await userAddressView(userId);
       setAddresses(updatedAddresses); // Update state with fresh data
-  
+
       setShowForm(false); // Hide form after submission
       setSuccessMessage("Address added successfully!");
-      
+
       // Reset form fields
       setNewAddress({
-        firstName:"",lastName: "", phone: "", addressLine1: "", addressLine2: "", 
+        firstName: "", lastName: "", phone: "", addressLine1: "", addressLine2: "",
         city: "", state: "", country: "", zipCode: "", addressType: "Home"
       });
-  
+
     } catch (error) {
       console.error("Error adding address:", error);
     }
   };
-  
+
 
   const handleDelete = async () => {
     try {
@@ -94,14 +104,14 @@ const ManageAddresses = () => {
 
   return (
     <Paper elevation={2} sx={{ p: 3 }}>
-      <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="h6" fontWeight="bold" mb={2}>
+      <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, }} variant="h6" fontWeight="bold" mb={2}>
         Manage Addresses
       </Typography>
       <Button
         startIcon={<Add />}
         variant="outlined"
         fullWidth
-        sx={{fontFamily: `"Montserrat", sans-serif`, mb: 2, textTransform: "none" }}
+        sx={{ fontFamily: `"Montserrat", sans-serif`, mb: 2, textTransform: "none" }}
         onClick={() => setShowForm(!showForm)}
       >
         {showForm ? "Cancel" : "Add a New Address"}
@@ -111,7 +121,7 @@ const ManageAddresses = () => {
         <Paper elevation={1} sx={{ p: 3, mb: 2 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
-              <TextField  label="Firts Name" name="firstName" value={newAddress.firstName} onChange={handleChange} fullWidth required />
+              <TextField label="Firts Name" name="firstName" value={newAddress.firstName} onChange={handleChange} fullWidth required />
             </Grid>
             <Grid item xs={12} sm={4}>
               <TextField label="Last Name" name="lastName" value={newAddress.lastName} onChange={handleChange} fullWidth required />
@@ -129,7 +139,21 @@ const ManageAddresses = () => {
               <TextField label="City" name="city" value={newAddress.city} onChange={handleChange} fullWidth required />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField label="State" name="state" value={newAddress.state} onChange={handleChange} fullWidth required />
+              <TextField
+                select
+                label="State"
+                name="state"
+                value={newAddress.state}
+                onChange={handleChange}
+                fullWidth
+                required
+              >
+                {indianStates.map((state) => (
+                  <MenuItem key={state} value={state}>
+                    {state}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField label="ZIP Code" name="zipCode" value={newAddress.zipCode} onChange={handleChange} fullWidth required />
@@ -144,7 +168,7 @@ const ManageAddresses = () => {
               </TextField>
             </Grid>
             <Grid item xs={12}>
-              <Button sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="contained" color="primary" fullWidth onClick={handleSubmit}>
+              <Button sx={{ fontFamily: `"Montserrat", sans-serif`, }} variant="contained" color="primary" fullWidth onClick={handleSubmit}>
                 Save Address
               </Button>
             </Grid>
@@ -155,13 +179,13 @@ const ManageAddresses = () => {
       {addresses.map((address, index) => (
         <Paper key={index} elevation={1} sx={{ p: 2, mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Box>
-            <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="body1" fontWeight="bold" mt={1}>
+            <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, }} variant="body1" fontWeight="bold" mt={1}>
               {address.firstName} {address.lastName} &nbsp; {address.phone}
             </Typography>
-            <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="body2">
+            <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, }} variant="body2">
               {address.addressLine1}, {address.addressLine2}
             </Typography>
-            <Typography sx={{fontFamily: `"Montserrat", sans-serif`,}} variant="body2">
+            <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, }} variant="body2">
               {address.city}, {address.state}, {address.zipCode}, {address.country}
             </Typography>
           </Box>
@@ -172,11 +196,11 @@ const ManageAddresses = () => {
       ))}
 
       <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, addressId: null })}>
-        <DialogTitle sx={{fontFamily: `"Montserrat", sans-serif`,}}>Confirm Deletion</DialogTitle>
-        <DialogContent sx={{fontFamily: `"Montserrat", sans-serif`,}}><DialogContentText>Are you sure you want to delete this address?</DialogContentText></DialogContent>
+        <DialogTitle sx={{ fontFamily: `"Montserrat", sans-serif`, }}>Confirm Deletion</DialogTitle>
+        <DialogContent sx={{ fontFamily: `"Montserrat", sans-serif`, }}><DialogContentText>Are you sure you want to delete this address?</DialogContentText></DialogContent>
         <DialogActions>
-          <Button sx={{fontFamily: `"Montserrat", sans-serif`,}} onClick={() => setDeleteDialog({ open: false, addressId: null })}>Cancel</Button>
-          <Button sx={{fontFamily: `"Montserrat", sans-serif`,}} color="error" onClick={handleDelete}>Delete</Button>
+          <Button sx={{ fontFamily: `"Montserrat", sans-serif`, }} onClick={() => setDeleteDialog({ open: false, addressId: null })}>Cancel</Button>
+          <Button sx={{ fontFamily: `"Montserrat", sans-serif`, }} color="error" onClick={handleDelete}>Delete</Button>
         </DialogActions>
       </Dialog>
     </Paper>
