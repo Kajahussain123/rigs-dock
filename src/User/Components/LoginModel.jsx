@@ -3,38 +3,49 @@ import { Modal, Box, Typography, TextField, Button, InputAdornment, IconButton, 
 import CloseIcon from "@mui/icons-material/Close";
 import LockIcon from "@mui/icons-material/Lock";
 import FlagIcon from "@mui/icons-material/Flag";
+import EmailIcon from "@mui/icons-material/Email";
 import { toast } from "react-toastify";
-import { registerWithMobile, sendOTP, verifyOTP } from "../../Services/allApi";
+import { sendOTP, verifyOTP, completeRegistration } from "../../Services/allApi";
 
 const LoginModal = ({ show, handleClose }) => {
-  const [step, setStep] = useState(1); // 1: Mobile, 2: OTP, 3: Register
-  const [mobile, setMobile] = useState("");
+  const [step, setStep] = useState(1); // 1: Identifier, 2: OTP, 3: Register
+  const [identifier, setIdentifier] = useState("");
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [loading, setLoading] = useState({
     sendOTP: false,
     verifyOTP: false,
     register: false
   });
+  const [identifierType, setIdentifierType] = useState(null); // 'email' or 'mobile'
+  const [registrationData, setRegistrationData] = useState({});
 
-  // Send OTP
+  // Check if identifier is email
+  const isEmail = (id) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(id);
+  };
+
+  // Send OTP to email or mobile
   const handleSendOTP = async () => {
-    if (mobile.length !== 10) {
-      toast.error("Please enter a valid 10-digit mobile number");
+    if (!identifier) {
+      toast.error("Please enter your email or mobile number");
       return;
     }
+
+    const isEmailInput = isEmail(identifier);
+    setIdentifierType(isEmailInput ? 'email' : 'mobile');
 
     setLoading(prev => ({ ...prev, sendOTP: true }));
     
     try {
-      const response = await sendOTP(mobile);
+      const response = await sendOTP(identifier);
       console.log("Send OTP Response:", response);
       
-      if (response.message === "OTP sent successfully" && response.sessionId) {
-        localStorage.setItem('sessionId', response.sessionId);
+      if (response.message && (response.identifierType === 'email' || response.identifierType === 'mobile')) {
         setStep(2);
-        toast.success("OTP sent successfully!");
+        toast.success(`OTP sent to your ${isEmailInput ? 'email' : 'mobile'}!`);
       } else {
         toast.error(response.message || "Failed to send OTP");
       }
@@ -56,15 +67,26 @@ const LoginModal = ({ show, handleClose }) => {
     setLoading(prev => ({ ...prev, verifyOTP: true }));
     
     try {
-      const response = await verifyOTP(mobile, otp.join(""));
+      const response = await verifyOTP({
+        identifier,
+        otp: otp.join(""),
+        identifierType
+      });
+      
       console.log("Verify OTP Response:", response);
       
-      if (response.userId && response.token) {
-        localStorage.setItem("userId", response.userId);
+      if (response.token && response.userId) {
+        // Login successful
         localStorage.setItem("token", response.token);
+        localStorage.setItem("userId", response.userId);
         toast.success("Login successful!");
         handleClose();
-      } else if (response.redirectToRegister) {
+      } else if (response.needsRegistration) {
+        // Need to register
+        setRegistrationData({
+          [identifierType]: identifier,
+          requires: identifierType === 'email' ? 'mobileNumber' : 'email'
+        });
         setStep(3);
         toast.info("Please complete your registration");
       } else {
@@ -78,22 +100,27 @@ const LoginModal = ({ show, handleClose }) => {
     }
   };
 
-  // Register User
+  // Complete registration
   const handleRegisterUser = async () => {
-    if (!name || !email) {
-      toast.error("Please enter all fields");
+    if (!name || (!email && !mobileNumber)) {
+      toast.error("Please enter all required fields");
       return;
     }
 
     setLoading(prev => ({ ...prev, register: true }));
     
     try {
-      const response = await registerWithMobile(name, email, mobile);
-      console.log("Register User Response:", response);
+      const userData = {
+        name,
+        email: identifierType === 'email' ? identifier : email,
+        mobileNumber: identifierType === 'mobile' ? identifier : mobileNumber
+      };
+
+      const response = await completeRegistration(userData);
       
-      if (response.userId && response.token) {
-        localStorage.setItem("userId", response.userId);
+      if (response.token && response.userId) {
         localStorage.setItem("token", response.token);
+        localStorage.setItem("userId", response.userId);
         toast.success("Registration successful!");
         handleClose();
       } else {
@@ -140,32 +167,36 @@ const LoginModal = ({ show, handleClose }) => {
           <CloseIcon />
         </IconButton>
 
-        {/* Step 1: Enter Mobile Number */}
+        {/* Step 1: Enter Email or Mobile */}
         {step === 1 && (
           <>
             <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1, fontFamily: `"Montserrat", sans-serif` }}>
               Sign-in / Sign-up
             </Typography>
             <Typography variant="body1" sx={{ fontWeight: "bold", mt: 2, fontFamily: `"Montserrat", sans-serif` }}>
-              Enter Mobile Number
+              Enter Email or Mobile Number
             </Typography>
             <Typography variant="body2" sx={{ color: "gray", mb: 2, fontFamily: `"Montserrat", sans-serif` }}>
-              Enter 10-digit mobile number to proceed
+              We'll send you an OTP to verify
             </Typography>
 
             <TextField
               fullWidth
               variant="outlined"
-              placeholder="Enter Mobile Number"
-              value={mobile}
-              onChange={(e) => setMobile(e.target.value)}
+              placeholder="Email or Mobile Number"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Box sx={{ display: "flex", alignItems: "center", bgcolor: "#f4f4f4", px: 1, borderRadius: "4px" }}>
-                      <FlagIcon sx={{ color: "#ff9800", fontSize: 20 }} />
-                      <Typography sx={{ ml: 1, fontSize: "14px" }}>+91</Typography>
-                    </Box>
+                    {isEmail(identifier) ? (
+                      <EmailIcon sx={{ color: "#ff9800", fontSize: 20 }} />
+                    ) : (
+                      <Box sx={{ display: "flex", alignItems: "center", bgcolor: "#f4f4f4", px: 1, borderRadius: "4px" }}>
+                        <FlagIcon sx={{ color: "#ff9800", fontSize: 20 }} />
+                        <Typography sx={{ ml: 1, fontSize: "14px" }}>+91</Typography>
+                      </Box>
+                    )}
                   </InputAdornment>
                 ),
               }}
@@ -201,7 +232,7 @@ const LoginModal = ({ show, handleClose }) => {
               Enter OTP
             </Typography>
             <Typography variant="body2" sx={{ color: "gray", mb: 2, fontFamily: `"Montserrat", sans-serif` }}>
-              Sent to +91 {mobile}
+              Sent to {identifierType === 'email' ? identifier : `+91 ${identifier}`}
             </Typography>
 
             <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mb: 2 }}>
@@ -243,10 +274,77 @@ const LoginModal = ({ show, handleClose }) => {
         {step === 3 && (
           <>
             <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2, fontFamily: `"Montserrat", sans-serif` }}>
-              Register Your Account
+              Complete Registration
             </Typography>
-            <TextField fullWidth label="Full Name" variant="outlined" value={name} onChange={(e) => setName(e.target.value)} margin="dense" />
-            <TextField fullWidth label="Email Address" variant="outlined" value={email} onChange={(e) => setEmail(e.target.value)} margin="dense" />
+            
+            <TextField 
+              fullWidth 
+              label="Full Name" 
+              variant="outlined" 
+              value={name} 
+              onChange={(e) => setName(e.target.value)} 
+              margin="dense" 
+            />
+            
+            {identifierType === 'email' ? (
+              <>
+                <TextField 
+                  fullWidth 
+                  label="Email" 
+                  variant="outlined" 
+                  value={identifier} 
+                  margin="dense"
+                  disabled
+                />
+                <TextField 
+                  fullWidth 
+                  label="Mobile Number" 
+                  variant="outlined" 
+                  value={mobileNumber} 
+                  onChange={(e) => setMobileNumber(e.target.value)} 
+                  margin="dense"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Box sx={{ display: "flex", alignItems: "center", bgcolor: "#f4f4f4", px: 1, borderRadius: "4px" }}>
+                          <FlagIcon sx={{ color: "#ff9800", fontSize: 20 }} />
+                          <Typography sx={{ ml: 1, fontSize: "14px" }}>+91</Typography>
+                        </Box>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <TextField 
+                  fullWidth 
+                  label="Mobile Number" 
+                  variant="outlined" 
+                  value={identifier} 
+                  margin="dense"
+                  disabled
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Box sx={{ display: "flex", alignItems: "center", bgcolor: "#f4f4f4", px: 1, borderRadius: "4px" }}>
+                          <FlagIcon sx={{ color: "#ff9800", fontSize: 20 }} />
+                          <Typography sx={{ ml: 1, fontSize: "14px" }}>+91</Typography>
+                        </Box>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <TextField 
+                  fullWidth 
+                  label="Email" 
+                  variant="outlined" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  margin="dense"
+                />
+              </>
+            )}
 
             <Button
               fullWidth

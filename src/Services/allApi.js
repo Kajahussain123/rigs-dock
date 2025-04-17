@@ -17,9 +17,9 @@ export const login = async (reqBody) => {
   }
 };
 
-export const sendOTP = async (mobileNumber) => {
+export const sendOTP = async (identifier) => {
   try {
-    const response = await axios.post(`${BASE_URL}/user/auth/send-otp`, { mobileNumber });
+    const response = await axios.post(`${BASE_URL}/user/auth/send-otp`, { identifier });
     return response.data;
   } catch (error) {
     console.error("Error sending OTP:", error);
@@ -27,14 +27,12 @@ export const sendOTP = async (mobileNumber) => {
   }
 };
 
-// Verify OTP
-// Correctly format the verifyOTP function
-export const verifyOTP = async (mobileNumber, otp) => {
+export const verifyOTP = async ({ identifier, otp, identifierType }) => {
   try {
     const response = await axios.post(`${BASE_URL}/user/auth/verify-otp`, { 
-      mobileNumber, 
+      identifier,
       otp,
-      sessionId: localStorage.getItem('sessionId') // Include this if your API requires it
+      identifierType
     });
     return response.data;
   } catch (error) {
@@ -43,10 +41,9 @@ export const verifyOTP = async (mobileNumber, otp) => {
   }
 };
 
-// Register with Mobile
-export const registerWithMobile = async (name, email, mobileNumber) => {
+export const completeRegistration = async (userData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/user/auth/register-with-mobile`, { name, email, mobileNumber });
+    const response = await axios.post(`${BASE_URL}/user/auth/register-with-mobile`, userData);
     return response.data;
   } catch (error) {
     console.error("Error registering user:", error);
