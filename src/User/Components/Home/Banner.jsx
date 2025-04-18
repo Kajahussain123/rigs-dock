@@ -57,7 +57,8 @@ const BannerSection = () => {
                             style={{
                                 width: '100%',
                                 height: '100%',
-                                objectFit: isMobile ? 'contain' : 'cover',
+                                objectFit: 'cover',
+
                                 objectPosition: 'center',
                                 display: 'block',
                             }}

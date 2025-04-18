@@ -96,11 +96,13 @@ const Header = () => {
 
   return (
     <>
-      <Navbar expand="lg" className="py-2 shadow-sm fixed-top"
+      <Navbar expand="lg" className="py-2 shadow-b fixed-top" 
         style={{
           backgroundColor: "#0A5FBF",
-          zIndex: 1050
-        }}>        <Container>
+          zIndex: 1050,
+          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+        }}>     
+        <Container>
           <Navbar.Brand href="/" className="me-3">
             <img src="https://i.postimg.cc/MKZkQfTh/logo.png" alt="Logo" height="40" />
           </Navbar.Brand>
