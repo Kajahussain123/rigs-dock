@@ -16,16 +16,16 @@ import {
   StepConnector,
   styled,
 } from "@mui/material";
-import ReceiptIcon from "@mui/icons-material/Receipt";
 import { useNavigate, useParams } from "react-router-dom";
-import { orderDetails } from "../../../Services/allApi";
 import placeholder from "../../../Assets/PlacHolder.png";
+import { downloadUserInvoice, orderDetails } from "../../../Services/allApi";
+import { toast } from 'react-hot-toast';
 
 // Custom styled connector for the stepper
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   [`&.MuiStepConnector-root`]: {
-    left: 'calc(-50% + 16px)',
-    right: 'calc(50% + 16px)',
+    left: "calc(-50% + 16px)",
+    right: "calc(50% + 16px)",
   },
   [`&.MuiStepConnector-active, &.MuiStepConnector-completed`]: {
     [`& .MuiStepConnector-line`]: {
@@ -39,6 +39,8 @@ const OrderDetails = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isDownloading, setIsDownloading] = React.useState(false);
+  const [downloadError, setDownloadError] = React.useState(null);
   const BASE_URL = "https://rigsdock.com/uploads/";
   const navigate = useNavigate();
 
@@ -72,18 +74,23 @@ const OrderDetails = () => {
   const getActiveStep = (orderStatus) => {
     const steps = getTrackingSteps();
     const statusMap = {
-      "Placed": 0,
-      "Processing": 1,
-      "Shipped": 2,
+      Placed: 0,
+      Processing: 1,
+      Shipped: 2,
       "Out for Delivery": 3,
-      "Delivered": 4,
+      Delivered: 4,
     };
     return statusMap[orderStatus] || 0;
   };
 
   if (loading)
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="200px"
+      >
         <CircularProgress />
       </Box>
     );
@@ -100,7 +107,7 @@ const OrderDetails = () => {
       </Typography>
     );
 
-  const handleAddRating = (productId , orderId) => {
+  const handleAddRating = (productId, orderId) => {
     navigate(`/profile/addReview/${productId}/${orderId}`);
   };
 
@@ -108,37 +115,112 @@ const OrderDetails = () => {
     navigate(`/profile/return/${orderId}/${productId}`);
   };
 
+  const handleDownloadUserInvoice = async () => {
+    setIsDownloading(true);
+    setDownloadError(null);
+  
+    const loadingToastId = toast.loading('Downloading invoice...');
+  
+    try {
+      const result = await downloadUserInvoice(order.mainOrderId);
+  
+      if (result.success) {
+        toast.success('Invoice downloaded successfully!', { id: loadingToastId });
+      } else {
+        toast.error(result.error || 'Failed to download invoice.', { id: loadingToastId });
+        setDownloadError(result.error);
+      }
+    } catch (error) {
+      const errorMessage = error.message || "Failed to download invoice";
+      toast.error(errorMessage, { id: loadingToastId });
+      setDownloadError(errorMessage);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+  
+
   return (
     <Container maxWidth="lg" sx={{ my: 2 }}>
-      <Typography variant="h5" fontWeight="bold" sx={{ mb: 4, fontFamily: `"Montserrat", sans-serif` }}>
-        Order Details
-      </Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={4}
+      >
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          sx={{ fontFamily: `"Montserrat", sans-serif` }}
+        >
+          Order Details
+        </Typography>
+        <Button
+          onClick={handleDownloadUserInvoice}
+          disabled={isDownloading}
+          variant="contained"
+          color="primary"
+        >
+          {isDownloading ? "Downloading..." : "Download Invoice"}
+        </Button>
+      </Box>
 
       <Grid container spacing={4}>
         {/* Left Section - Order Items and Tracking */}
         <Grid item xs={12} md={8}>
           <Card elevation={3}>
             <CardContent>
-              <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, fontFamily: `"Montserrat", sans-serif` }}>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{ mb: 2, fontFamily: `"Montserrat", sans-serif` }}
+              >
                 Order Items
               </Typography>
               {order.items.map((item) => (
-                <Box key={item.product._id} display="flex" alignItems="center" gap={2} sx={{ mb: 3 }}>
+                <Box
+                  key={item.product._id}
+                  display="flex"
+                  alignItems="center"
+                  gap={2}
+                  sx={{ mb: 3 }}
+                >
                   <CardMedia
                     component="img"
-                    image={item.product.images.length ? `${BASE_URL}${item.product.images[0]}` : placeholder}
+                    image={
+                      item.product.images.length
+                        ? `${BASE_URL}${item.product.images[0]}`
+                        : placeholder
+                    }
                     alt={item.product.name}
-                    sx={{ width: 100, height: 100, objectFit: "contain", borderRadius: 1 }}
+                    sx={{
+                      width: 100,
+                      height: 100,
+                      objectFit: "contain",
+                      borderRadius: 1,
+                    }}
                   />
                   <Box flexGrow={1}>
-                    <Typography variant="h6" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                      sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                    >
                       {item.product.name}
                     </Typography>
-                    <Typography color="textSecondary" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                    <Typography
+                      color="textSecondary"
+                      sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                    >
                       Brand: {item.product.brand}
                     </Typography>
-                    <Typography variant="h6" color="primary" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
-                      ₹{item.product.finalPrice.toLocaleString('en-IN')}
+                    <Typography
+                      variant="h6"
+                      color="primary"
+                      fontWeight="bold"
+                      sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                    >
+                      ₹{item.product.finalPrice.toLocaleString("en-IN")}
                     </Typography>
                   </Box>
                 </Box>
@@ -146,9 +228,13 @@ const OrderDetails = () => {
             </CardContent>
           </Card>
           {/* Tracking Section */}
-          <Card elevation={3} sx={{mt:2}}>
+          <Card elevation={3} sx={{ mt: 2 }}>
             <CardContent>
-              <Typography variant="h6" fontWeight="bold" sx={{ mb: 3, fontFamily: `"Montserrat", sans-serif` }}>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{ mb: 3, fontFamily: `"Montserrat", sans-serif` }}
+              >
                 Order Tracking
               </Typography>
               <Stepper
@@ -160,16 +246,22 @@ const OrderDetails = () => {
                   <Step key={step.label}>
                     <StepLabel
                       sx={{
-                        '& .MuiStepLabel-label': {
+                        "& .MuiStepLabel-label": {
                           fontFamily: `"Montserrat", sans-serif`,
-                          fontWeight: 'bold',
+                          fontWeight: "bold",
                         },
                       }}
                     >
                       {step.label}
                       {index <= getActiveStep(order.orderStatus) && (
-                        <Typography variant="caption" color="text.secondary" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
-                          {index === getActiveStep(order.orderStatus) ? `In progress` : `Completed`}
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                        >
+                          {index === getActiveStep(order.orderStatus)
+                            ? `In progress`
+                            : `Completed`}
                         </Typography>
                       )}
                     </StepLabel>
@@ -180,58 +272,89 @@ const OrderDetails = () => {
           </Card>
 
           {/* Order Items Section */}
-
         </Grid>
 
         {/* Right Section - Order Summary */}
         <Grid item xs={12} md={4}>
           <Card elevation={3}>
             <CardContent>
-              <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, fontFamily: `"Montserrat", sans-serif` }}>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{ mb: 2, fontFamily: `"Montserrat", sans-serif` }}
+              >
                 Order Summary
               </Typography>
 
               {/* Order Status */}
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body1" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                >
                   Order Status:
                 </Typography>
-                <Typography color="green" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                <Typography
+                  color="green"
+                  fontWeight="bold"
+                  sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                >
                   ✔ {order.orderStatus}
                 </Typography>
               </Box>
 
               {/* Payment Status */}
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body1" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                >
                   Payment Status:
                 </Typography>
-                <Typography color="green" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                <Typography
+                  color="green"
+                  fontWeight="bold"
+                  sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                >
                   ✔ {order.paymentStatus}
                 </Typography>
               </Box>
 
               {/* Payment Method */}
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body1" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                >
                   Payment Method:
                 </Typography>
-                <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>{order.paymentMethod}</Typography>
+                <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                  {order.paymentMethod}
+                </Typography>
               </Box>
 
               {/* Shipping Details */}
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body1" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                >
                   Shipping Details:
                 </Typography>
                 <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
                   {order.shippingAddress.fullName}
                 </Typography>
                 <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
-                  {order.shippingAddress.addressLine1}, {order.shippingAddress.city}, {order.shippingAddress.state}
+                  {order.shippingAddress.addressLine1},{" "}
+                  {order.shippingAddress.city}, {order.shippingAddress.state}
                 </Typography>
                 <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
-                  {order.shippingAddress.country} - {order.shippingAddress.zipCode}
+                  {order.shippingAddress.country} -{" "}
+                  {order.shippingAddress.zipCode}
                 </Typography>
                 <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
                   Phone: {order.shippingAddress.phone}
@@ -240,30 +363,62 @@ const OrderDetails = () => {
 
               {/* Price Details */}
               <Box>
-                <Typography variant="body1" fontWeight="bold" sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ fontFamily: `"Montserrat", sans-serif` }}
+                >
                   Price Details:
                 </Typography>
-                <Box display="flex" justifyContent="space-between" sx={{ mt: 1 }}>
-                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>List Price</Typography>
-                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, textDecoration: "line-through" }}>
-                    ₹{order.items[0].product.price.toLocaleString('en-IN')}
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  sx={{ mt: 1 }}
+                >
+                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                    List Price
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontFamily: `"Montserrat", sans-serif`,
+                      textDecoration: "line-through",
+                    }}
+                  >
+                    ₹{order.items[0].product.price.toLocaleString("en-IN")}
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between">
-                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>Selling Price</Typography>
-                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>₹{order.items[0].product.finalPrice.toLocaleString('en-IN')}</Typography>
+                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                    Selling Price
+                  </Typography>
+                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                    ₹{order.items[0].product.finalPrice.toLocaleString("en-IN")}
+                  </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between">
-                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>Delivery Fee</Typography>
                   <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
-                    {order.items[0].product.deliveryfee ? `₹${order.items[0].product.deliveryfee.toLocaleString('en-IN')}` : "Free"}
+                    Delivery Fee
+                  </Typography>
+                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                    {order.items[0].product.deliveryfee
+                      ? `₹${order.items[0].product.deliveryfee.toLocaleString(
+                          "en-IN"
+                        )}`
+                      : "Free"}
                   </Typography>
                 </Box>
                 <Divider sx={{ my: 1 }} />
                 <Box display="flex" justifyContent="space-between">
-                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>Total Price</Typography>
-                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif`, fontWeight: "bold" }}>
-                    ₹{order.totalPrice.toLocaleString('en-IN')}
+                  <Typography sx={{ fontFamily: `"Montserrat", sans-serif` }}>
+                    Total Price
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontFamily: `"Montserrat", sans-serif`,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    ₹{order.totalPrice.toLocaleString("en-IN")}
                   </Typography>
                 </Box>
               </Box>
@@ -280,7 +435,11 @@ const OrderDetails = () => {
               <Button
                 onClick={() => handleReturnOrder(order._id, item.product._id)}
                 variant="outlined"
-                sx={{ fontFamily: `"Montserrat", sans-serif`, textTransform: "none", fontWeight: "bold" }}
+                sx={{
+                  fontFamily: `"Montserrat", sans-serif`,
+                  textTransform: "none",
+                  fontWeight: "bold",
+                }}
               >
                 Return Order
               </Button>
@@ -288,7 +447,11 @@ const OrderDetails = () => {
                 onClick={() => handleAddRating(item.product._id, order._id)}
                 variant="contained"
                 color="warning"
-                sx={{ fontFamily: `"Montserrat", sans-serif`, textTransform: "none", fontWeight: "bold" }}
+                sx={{
+                  fontFamily: `"Montserrat", sans-serif`,
+                  textTransform: "none",
+                  fontWeight: "bold",
+                }}
               >
                 Rate & Review Product
               </Button>

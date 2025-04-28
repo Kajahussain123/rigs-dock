@@ -533,3 +533,74 @@ export const verifyBank = async (accountNumber, ifscCode) => {
     };
   }
 };
+
+export const downloadUserInvoice = async (orderId) => {
+  const url = `${BASE_URL}/user/order/${orderId}/invoice`;
+  try {
+    // First, get the invoice URL
+    const response = await fetch(url, {
+      method: 'GET',
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to generate invoice');
+    }
+    const data = await response.json();
+    if (!data.invoiceUrl) {
+      throw new Error('Invoice URL not found in response');
+    }
+    let pdfUrl = data.invoiceUrl;
+    if (!pdfUrl.startsWith('http')) {
+      pdfUrl = `${BASE_URL}${pdfUrl.startsWith('/') ? '' : '/'}${pdfUrl}`;
+    }
+    // Fetch the actual PDF file
+    const pdfResponse = await fetch(pdfUrl);
+    if (!pdfResponse.ok) {
+      throw new Error(`Failed to download invoice PDF: ${pdfResponse.status} ${pdfResponse.statusText}`);
+    }
+    const pdfBlob = await pdfResponse.blob();
+    const downloadUrl = window.URL.createObjectURL(pdfBlob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `user-invoice-${orderId}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+    return { success: true, message: 'Invoice downloaded successfully' };
+  } catch (error) {
+    console.error('Download error:', error);
+    return {
+      success: false,
+      error: error.message || "Error downloading invoice",
+    };
+  }
+};
+
+export const verifygst = async (gstNumber) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/user/vendor/verifygst?gstNumber=${gstNumber}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to verify gst", error);
+    return [];
+  }
+};
+export const verifypan = async (panNumber) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/user/vendor/verifypan?panNumber=${panNumber}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to verify pan", error);
+    return [];
+  }
+};
+export const verifyaccount = async (accountNumber, ifscCode) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/user/vendor/verifyaccount?accountNumber=${accountNumber}&ifscCode=${ifscCode}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to verify account", error);
+    return [];
+  }
+};
