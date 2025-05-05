@@ -4,7 +4,7 @@ export const commonApi = async (method, url, data, options = {}) => {
   try {
     const headers = {
       'Authorization': `Bearer ${localStorage.getItem('access_token') || ''}`,
-      ...options.headers, // Spread any custom headers
+      ...options.headers, 
     };
 
     const response = await axios({
